@@ -5,24 +5,57 @@
 .model tiny
 .code
 org 100h
-Start:          mov  al, 03h                    ; first  symbol of string
-                mov  ah, 0001001b               ; color of first  symbol
-                mov  bl, '-'                    ; middle symbol of string
+Start:          mov  al, 03h                    ; start  symbol of first string
+                mov  ah, 0001001b               ; color of start  symbol
+                mov  bl, '-'                    ; middle symbol of first string
                 mov  bh, 0001001b               ; color of middle symbol
-                mov  dl, 03h                    ; end    symbol of string
+                mov  dl, 03h                    ; end    symbol of first string
                 mov  dh, 0001001b               ; color of end    symbol
-                mov  cx, 40                     ; size of string
-                mov  di, 10 * 80 * 2 + 20 * 2   ; di = start of print
-                call MakeStrFrame               ; make string of frame
+                mov  cx, 40                     ; cx - len  of frame
+                mov  si, 5                      ; si - high of frame
+                mov  di, 10 * 80 * 2 + 20 * 2   ; di - ptr of upper left corner
+                mov  bp, sp                     ; bp - up of stack
+                push bp                         ; save bp
+                call MakeFrame                  ; make frame
 
                 mov  ax, 4c00h                  ; DOS Fn 4ch = exit (al)
                 int  21h
 ;------------------------------------------------------------------------------
-; MakeFrame      Func to make frame
-; Entry:
-; Exit:
-; Destroy:
+; MakeFrame     Func to make frame
+; Entry:        ax     - start  symbol of first frame's string
+;               bx     - middle symbol of first frame's string
+;               dx     - end    symbol of first frame's string
+;               cx     - len  of frame
+;               si     - high of frame
+;               di     - ptr  of upper left corner of the frame
+;               bp     - up   of stack
+; Exit:         None
+; Destroy:      ax, bx, cx, dx, di, si
 ;------------------------------------------------------------------------------
+MakeFrame       proc
+                push bp
+                push cx                         ; save cx in stack
+                call MakeStrFrame               ; make first string of frame
+                pop  cx                         ; pop cx from stack
+                sub  si, 2                      ; si -= 2; si - number
+                                                ; of middle strings
+MakeMiddle:     add  di, 80                     ; di to next string
+                push cx                         ; save cx
+                call MakeStrFrame               ; make middle string
+                pop  cx                         ; cx = saved value of cx
+                                                ; cx - len of frame
+                dec  si                         ; si--;
+                cmp  si, 0                      ; si = 0?
+                jne  MakeMiddle                 ; loop
+                add  di, 80                     ; di to next string
+                call MakeStrFrame               ; make end string of frame
+                pop bp                          ; bp from stack
+                mov sp, bp                      ; sp = bp
+                add sp, 2 * 6                   ; clear stack
+
+                ret
+MakeFrame       endp
+
 ;------------------------------------------------------------------------------
 ; MakeStrFrame  Func to make string of frame
 ; Entry:        cx     - len of string
@@ -56,7 +89,7 @@ MakeStrFrame    endp
 ;               cx     - size of text
 ;               di     - start of print
 ; Exit:         None
-; Destroy:      di, es, cx
+; Destroy:      es, cx
 ;------------------------------------------------------------------------------
 PutString       proc
                 push di                         ; ptr of start of print
