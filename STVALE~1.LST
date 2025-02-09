@@ -1,0 +1,70 @@
+Turbo Assembler	 Version 4.1	    02/09/25 17:39:08	    Page 1
+stvale~1.asm
+
+
+
+      1				     ;-------------------------------------------------------------------------
+      2				     ;			     Asm Task to Valentine's day
+      3				     ;			       (c) 2025	Muratov	Artyom
+      4				     ;-------------------------------------------------------------------------
+      5	0000			     .model tiny
+      6	0000			     .code
+      7				     org 100h
+      8	0100  B0 41		     Start:	     mov  al, 'A'		     ; symbol
+      9	0102  B4 0A				     mov  ah, 0001010b		     ; color
+     10	0104  B9 000A				     mov  cx, 10		     ; size of string
+     11	0107  E8 0005				     call PutString
+     12
+     13	010A  B8 4C00				     mov  ax, 4c00h		     ; DOS Fn 4ch = exit (al)
+     14	010D  CD 21				     int  21h
+     15				     ;-------------------------------------------------------------------------
+     16				     ; Func to put string to consol
+     17				     ; Entry:	al/ ah - symbol/ color
+     18				     ;		cx     - size of text
+     19				     ; Exit:	None
+     20				     ; Destroy:	di, es,	cx, ax
+     21				     ;-------------------------------------------------------------------------
+     22	010F			     PutString	     proc
+     23	010F  BF B800				     mov  di, 0b800h		     ; VIDEOSEG
+     24	0112  8E C7				     mov  es, di		     ; es = videoseg
+     25	0114  BF 067C				     mov  di, 10 * 80 *	2 + 30 * 2   ; di = start of print
+     26	0117  AB		     NewChar:	     stosw			     ; mov es:[di], ax && di +=	2
+     27	0118  E2 FD				     loop   NewChar		     ; cx -= 1;	cx = 0?; goto NewChar
+     28	011A  C3				     ret
+     29	011B			     PutString	     endp
+     30
+     31				     end	     Start
+Turbo Assembler	 Version 4.1	    02/09/25 17:39:08	    Page 2
+Symbol Table
+
+
+
+
+Symbol Name			  Type	 Value
+
+??DATE				  Text	 "02/09/25"
+??FILENAME			  Text	 "stvale~1"
+??TIME				  Text	 "17:39:08"
+??VERSION			  Number 040A
+@32BIT				  Text	 0
+@CODE				  Text	 DGROUP
+@CODESIZE			  Text	 0
+@CPU				  Text	 0101H
+@CURSEG				  Text	 _TEXT
+@DATA				  Text	 DGROUP
+@DATASIZE			  Text	 0
+@FILENAME			  Text	 STVALE~1
+@INTERFACE			  Text	 000H
+@MODEL				  Text	 1
+@STACK				  Text	 DGROUP
+@WORDSIZE			  Text	 2
+NEWCHAR				  Near	 DGROUP:0117
+PUTSTRING			  Near	 DGROUP:010F
+START				  Near	 DGROUP:0100
+
+Groups & Segments		  Bit Size Align  Combine Class
+
+DGROUP				  Group
+  _DATA				  16  0000 Word	  Public  DATA
+  _TEXT				  16  011B Word	  Public  CODE
+
