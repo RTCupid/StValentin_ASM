@@ -5,27 +5,8 @@
 .model tiny
 .code
 org 100h
-Start:          A db 9 dup(?)                   ; array of frame's symbols
+Start:          A db 03h, 03h, 03h, 03h, 00h, 03h, 03h, 03h, 03h  ; array of frame's symbols
                 lea  bx, A                      ; bx = ptr of array of symbols
-
-                mov  si, 0                      ; si = offset from start array
-                mov  [bx][si], 03h              ; start  symbol of first string
-                inc  si                         ; si += 1
-                mov  [bx][si], 03h              ; middle symbol of first string
-                inc  si                         ; si += 1
-                mov  [bx][si], 03h              ; end    symbol of first string
-                inc  si                         ; si += 1
-                mov  [bx][si], 03h              ; start  symbol of middle str
-                inc  si                         ; si += 1
-                mov  [bx][si], 00h              ; middle symbol of middle str
-                inc  si                         ; si += 1
-                mov  [bx][si], 03h              ; end    symbol of middle str
-                inc  si                         ; si += 1
-                mov  [bx][si], 03h              ; start  symbol of end string
-                inc  si                         ; si += 1
-                mov  [bx][si], 03h              ; middle symbol of end string
-                inc  si                         ; si += 1
-                mov  [bx][si], 03h              ; end    symbol of end string
 
                 mov  ah, 09h                    ; color of frame
                 mov  cx, 40                     ; len   of frame
@@ -50,20 +31,7 @@ MakeFrame       proc
                 push di                         ; save start of print in stack
                 call SetEsVideoSeg              ; di = 0b800h; es = di
                 pop  di                         ; back start of print
-                B db 3 dup(?)                   ; B - array of symbols
-                                                ; for string of frame
-                lea  si, B                      ; si = B
-                push cx                         ; save cx in stack
-                mov  cx, 0                      ; start index of elems B
-                mov  [si][cx], [bx][cx]         ; start  symbol of first string
-                                                ; to array B
-                inc  cx                         ; cx++
-                mov  [si][cx], [bx][cx]         ; middle symbol of first string
-                                                ; to array B
-                inc  cx                         ; cx++
-                mov  [si][cx], [bx][cx]         ; end    symbol of first string
-                                                ; to array B
-                pop  cx                         ; cx = len of frame
+
                 push cx                         ; save cx in stack
                 call MakeStrFrame               ; make first string of frame
                 pop  cx                         ; pop cx from stack
@@ -98,7 +66,7 @@ MakeMiddle:     add  di, 80                     ; di to next string
                 mov  [si][cx], [bx][cx]         ; middle symbol of end string
                                                 ; to array B
                 inc  cx                         ; cx++
-                mov  [si][cx], [bx][cx]         ; end    symbol of end string
+                mov  al, [bx][cx]         ; end    symbol of end string
                                                 ; to array B
                 pop  cx                         ; cx = len of frame
                 call MakeStrFrame               ; make end string of frame
@@ -160,6 +128,7 @@ SetEsVideoSeg   proc
                 mov  es, di                     ; es = videoseg
                 ret
 SetEsVideoSeg   endp
+
 
 end             Start
 ;------------------------------------------------------------------------------

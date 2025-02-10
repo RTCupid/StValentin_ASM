@@ -1,4 +1,4 @@
-Turbo Assembler	 Version 4.1	    02/10/25 23:31:05	    Page 1
+Turbo Assembler	 Version 4.1	    02/10/25 23:47:19	    Page 1
 stvale~1.asm
 
 
@@ -60,7 +60,7 @@ stvale~1.asm
      46				     ; Exit:	     None
      47				     ; Destroy:	     ax, bx, cx, dx, si, di, es
      48				     ;------------------------------------------------------------------------------
-Turbo Assembler	 Version 4.1	    02/10/25 23:31:05	    Page 2
+Turbo Assembler	 Version 4.1	    02/10/25 23:47:19	    Page 2
 stvale~1.asm
 
 
@@ -122,7 +122,7 @@ stvale~1.asm
      91	0181  75 F2				     jne  MakeMiddle		     ; loop
      92	0183  83 C7 50				     add  di, 80		     ; di to next string
      93	0186  51				     push cx			     ; save cx in stack
-Turbo Assembler	 Version 4.1	    02/10/25 23:31:05	    Page 3
+Turbo Assembler	 Version 4.1	    02/10/25 23:47:19	    Page 3
 stvale~1.asm
 
 
@@ -184,7 +184,7 @@ stvale~1.asm
     142				     ; Exit:	     None
     143				     ; Destroy:	     es, cx
     144				     ;------------------------------------------------------------------------------
-Turbo Assembler	 Version 4.1	    02/10/25 23:31:05	    Page 4
+Turbo Assembler	 Version 4.1	    02/10/25 23:47:19	    Page 4
 stvale~1.asm
 
 
@@ -209,7 +209,7 @@ stvale~1.asm
     162	01AC			     SetEsVideoSeg   endp
     163
     164				     end	     Start
-Turbo Assembler	 Version 4.1	    02/10/25 23:31:05	    Page 5
+Turbo Assembler	 Version 4.1	    02/10/25 23:47:19	    Page 5
 Symbol Table
 
 
@@ -219,7 +219,7 @@ Symbol Name			  Type	 Value
 
 ??DATE				  Text	 "02/10/25"
 ??FILENAME			  Text	 "stvale~1"
-??TIME				  Text	 "23:31:05"
+??TIME				  Text	 "23:47:19"
 ??VERSION			  Number 040A
 @32BIT				  Text	 0
 @CODE				  Text	 DGROUP
@@ -248,7 +248,7 @@ Groups & Segments		  Bit Size Align  Combine Class
 DGROUP				  Group
   _DATA				  16  0000 Word	  Public  DATA
   _TEXT				  16  01AC Word	  Public  CODE
-Turbo Assembler	 Version 4.1	    02/10/25 23:31:05	    Page 6
+Turbo Assembler	 Version 4.1	    02/10/25 23:47:19	    Page 6
 Error Summary
 
 
