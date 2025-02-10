@@ -5,17 +5,25 @@
 .model tiny
 .code
 org 100h
-Start:          mov  al, 03h                    ; start  symbol of first string
-                mov  ah, 0001001b               ; color of start  symbol
-                mov  bl, '-'                    ; middle symbol of first string
-                mov  bh, 0001001b               ; color of middle symbol
-                mov  dl, 03h                    ; end    symbol of first string
-                mov  dh, 0001001b               ; color of end    symbol
+Start:          mov  ax, 09c9h                  ; start  symbol of first string
+                                                ; (ah - color, al - symbol)
+                mov  bx, 09cdh                  ; middle symbol of first string
+                                                ; (bh - color, bl - symbol)
+                mov  dx, 09bbh                  ; end    symbol of first string
+                                                ; (dh - color, dl - symbol)
                 mov  cx, 40                     ; cx - len  of frame
                 mov  si, 5                      ; si - high of frame
                 mov  di, 10 * 80 * 2 + 20 * 2   ; di - ptr of upper left corner
+                push 09bch                      ; end    symbol of end string
+                push 09cdh                      ; middle symbol of end string
+                push 09c8h                      ; start  symbol of end string
+                push 09bah                      ; end    symbol of
+                                                ; middle strings
+                push 0900h                      ; middle symbol of
+                                                ; middle strings
+                push 09bah                      ; start  symbol of
+                                                ; middle strings
                 mov  bp, sp                     ; bp - up of stack
-                push bp                         ; save bp
                 call MakeFrame                  ; make frame
 
                 mov  ax, 4c00h                  ; DOS Fn 4ch = exit (al)
@@ -28,17 +36,29 @@ Start:          mov  al, 03h                    ; start  symbol of first string
 ;               cx     - len  of frame
 ;               si     - high of frame
 ;               di     - ptr  of upper left corner of the frame
+;               stack  - end    symbol of end string
+;                        middle symbol of end string
+;                        start  symbol of end string
+;                        end    symbol of middle strings
+;                        middle symbol of middle strings
+;                        start  symbol of middle strings (bp = up)
 ;               bp     - up   of stack
 ; Exit:         None
 ; Destroy:      ax, bx, cx, dx, di, si
 ;------------------------------------------------------------------------------
 MakeFrame       proc
-                push bp
+                push bp                         ; save bp
                 push cx                         ; save cx in stack
                 call MakeStrFrame               ; make first string of frame
                 pop  cx                         ; pop cx from stack
                 sub  si, 2                      ; si -= 2; si - number
                                                 ; of middle strings
+                mov  ax, SS:[bp]                ; ax - start  symbol of
+                                                ; middle strings
+                mov  bx, SS:[bp + 2]            ; bx - middle symbol of
+                                                ; middle strings
+                mov  dx, SS:[bp + 4]            ; dx - end    symbol of
+                                                ; middle strings
 MakeMiddle:     add  di, 80                     ; di to next string
                 push cx                         ; save cx
                 call MakeStrFrame               ; make middle string
@@ -48,6 +68,12 @@ MakeMiddle:     add  di, 80                     ; di to next string
                 cmp  si, 0                      ; si = 0?
                 jne  MakeMiddle                 ; loop
                 add  di, 80                     ; di to next string
+                mov  ax, SS:[bp + 6]            ; ax - start  symbol of
+                                                ; end strings
+                mov  bx, SS:[bp + 8]            ; bx - middle symbol of
+                                                ; end strings
+                mov  dx, SS:[bp + 10]           ; dx - end    symbol of
+                                                ; end strings
                 call MakeStrFrame               ; make end string of frame
                 pop bp                          ; bp from stack
                 mov sp, bp                      ; sp = bp

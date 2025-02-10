@@ -1,4 +1,4 @@
-Turbo Assembler	 Version 4.1	    02/10/25 01:14:05	    Page 1
+Turbo Assembler	 Version 4.1	    02/10/25 11:41:53	    Page 1
 stvale~1.asm
 
 
@@ -10,127 +10,159 @@ stvale~1.asm
       5	0000			     .model tiny
       6	0000			     .code
       7				     org 100h
-      8	0100  B0 03		     Start:	     mov  al, 03h		     ; start  symbol of	first string
-      9	0102  B4 09				     mov  ah, 0001001b		     ; color of	start  symbol
-     10	0104  B3 2D				     mov  bl, '-'		     ; middle symbol of	first string
-     11	0106  B7 09				     mov  bh, 0001001b		     ; color of	middle symbol
-     12	0108  B2 03				     mov  dl, 03h		     ; end    symbol of	first string
-     13	010A  B6 09				     mov  dh, 0001001b		     ; color of	end    symbol
-     14	010C  B9 0028				     mov  cx, 40		     ; cx - len	 of frame
-     15	010F  BE 0005				     mov  si, 5			     ; si - high of frame
-     16	0112  BF 0668				     mov  di, 10 * 80 *	2 + 20 * 2   ; di - ptr	of upper left corner
-     17	0115  8B EC				     mov  bp, sp		     ; bp - up of stack
-     18	0117  55				     push bp			     ; save bp
-     19	0118  E8 0005				     call MakeFrame		     ; make frame
-     20
-     21	011B  B8 4C00				     mov  ax, 4c00h		     ; DOS Fn 4ch = exit (al)
-     22	011E  CD 21				     int  21h
-     23				     ;------------------------------------------------------------------------------
-     24				     ; MakeFrame     Func to make frame
-     25				     ; Entry:	     ax	    - start  symbol of first frame's string
-     26				     ;		     bx	    - middle symbol of first frame's string
-     27				     ;		     dx	    - end    symbol of first frame's string
-     28				     ;		     cx	    - len  of frame
-     29				     ;		     si	    - high of frame
-     30				     ;		     di	    - ptr  of upper left corner	of the frame
-     31				     ;		     bp	    - up   of stack
-     32				     ; Exit:	     None
-     33				     ; Destroy:	     ax, bx, cx, dx, di, si
-     34				     ;------------------------------------------------------------------------------
-     35	0120			     MakeFrame	     proc
-     36	0120  55				     push bp
-     37	0121  51				     push cx			     ; save cx in stack
-     38	0122  E8 001F				     call MakeStrFrame		     ; make first string of frame
-     39	0125  59				     pop  cx			     ; pop cx from stack
-     40	0126  83 EE 02				     sub  si, 2			     ; si -= 2;	si - number
-     41										     ; of middle strings
-     42	0129  83 C7 50		     MakeMiddle:     add  di, 80		     ; di to next string
-     43	012C  51				     push cx			     ; save cx
-     44	012D  E8 0014				     call MakeStrFrame		     ; make middle string
-     45	0130  59				     pop  cx			     ; cx = saved value	of cx
-     46										     ; cx - len	of frame
-     47	0131  4E				     dec  si			     ; si--;
-     48	0132  83 FE 00				     cmp  si, 0			     ; si = 0?
-     49	0135  75 F2				     jne  MakeMiddle		     ; loop
-     50	0137  83 C7 50				     add  di, 80		     ; di to next string
-     51	013A  E8 0007				     call MakeStrFrame		     ; make end	string of frame
-     52	013D  5D				     pop bp			     ; bp from stack
-     53	013E  8B E5				     mov sp, bp			     ; sp = bp
-     54	0140  83 C4 0C				     add sp, 2 * 6		     ; clear stack
-     55
-     56	0143  C3				     ret
-     57	0144			     MakeFrame	     endp
-Turbo Assembler	 Version 4.1	    02/10/25 01:14:05	    Page 2
+      8	0100  B8 09C9		     Start:	     mov  ax, 09c9h		     ; start  symbol of	first string
+      9										     ; (ah - color, al - symbol)
+     10	0103  BB 09CD				     mov  bx, 09cdh		     ; middle symbol of	first string
+     11										     ; (bh - color, bl - symbol)
+     12	0106  BA 09BB				     mov  dx, 09bbh		     ; end    symbol of	first string
+     13										     ; (dh - color, dl - symbol)
+     14	0109  B9 0028				     mov  cx, 40		     ; cx - len	 of frame
+     15	010C  BE 0005				     mov  si, 5			     ; si - high of frame
+     16	010F  BF 0668				     mov  di, 10 * 80 *	2 + 20 * 2   ; di - ptr	of upper left corner
+     17	0112  50 55 8B EC C7 46	02+		     push 09bch			     ; end    symbol of	end string
+     18	      09BC 5D
+     19	011C  50 55 8B EC C7 46	02+		     push 09cdh			     ; middle symbol of	end string
+     20	      09CD 5D
+     21	0126  50 55 8B EC C7 46	02+		     push 09c8h			     ; start  symbol of	end string
+     22	      09C8 5D
+     23	0130  50 55 8B EC C7 46	02+		     push 09bah			     ; end    symbol of
+     24	      09BA 5D
+     25										     ; middle strings
+     26	013A  50 55 8B EC C7 46	02+		     push 0900h			     ; middle symbol of
+     27	      0900 5D
+     28										     ; middle strings
+     29	0144  50 55 8B EC C7 46	02+		     push 09bah			     ; start  symbol of
+     30	      09BA 5D
+     31										     ; middle strings
+     32	014E  8B EC				     mov  bp, sp		     ; bp - up of stack
+     33	0150  E8 0005				     call MakeFrame		     ; make frame
+     34
+     35	0153  B8 4C00				     mov  ax, 4c00h		     ; DOS Fn 4ch = exit (al)
+     36	0156  CD 21				     int  21h
+     37				     ;------------------------------------------------------------------------------
+     38				     ; MakeFrame     Func to make frame
+     39				     ; Entry:	     ax	    - start  symbol of first frame's string
+     40				     ;		     bx	    - middle symbol of first frame's string
+     41				     ;		     dx	    - end    symbol of first frame's string
+     42				     ;		     cx	    - len  of frame
+     43				     ;		     si	    - high of frame
+     44				     ;		     di	    - ptr  of upper left corner	of the frame
+     45				     ;		     stack  - end    symbol of end string
+     46				     ;			      middle symbol of end string
+     47				     ;			      start  symbol of end string
+     48				     ;			      end    symbol of middle strings
+     49				     ;			      middle symbol of middle strings
+     50				     ;			      start  symbol of middle strings (bp = up)
+     51				     ;		     bp	    - up   of stack
+     52				     ; Exit:	     None
+     53				     ; Destroy:	     ax, bx, cx, dx, di, si
+     54				     ;------------------------------------------------------------------------------
+     55	0158			     MakeFrame	     proc
+     56	0158  55				     push bp			     ; save bp
+     57	0159  51				     push cx			     ; save cx in stack
+Turbo Assembler	 Version 4.1	    02/10/25 11:41:53	    Page 2
 stvale~1.asm
 
 
 
-     58
-     59				     ;------------------------------------------------------------------------------
-     60				     ; MakeStrFrame  Func to make string of frame
-     61				     ; Entry:	     cx	    - len of string
-     62				     ;		     ax	    - first symbol of string (color - ah)
-     63				     ;		     bx	    - middle symbol of string (color - ah)
-     64				     ;		     dx	    - end   symbol of string (color - ah)
-     65				     ;		     di	    - start of print
-     66				     ; Exit:	     None
-     67				     ; Destroy:	     di, es, ax, cx
-     68				     ;------------------------------------------------------------------------------
-     69	0144			     MakeStrFrame    proc
-     70	0144  57				     push di			     ; ptr of start of print
-     71										     ; pushed to stack
-     72	0145  E8 0017				     call SetEsVideoSeg		     ; di = 0b800h; es = di
-     73	0148  5F				     pop  di			     ; ptr of start of print
-     74										     ; popped from stack
-     75	0149  AB				     stosw			     ; mov es:[di], ax && di +=	2
-     76	014A  8B C3				     mov  ax, bx		     ; ax = middle symbol of string
-     77	014C  83 E9 02				     sub  cx, 2			     ; cx -= 2;	cx = number
-     78										     ; of middle symbols
-     79	014F  E8 0004				     call PutString		     ; put all middle symbols
-     80	0152  8B C2				     mov  ax, dx		     ; ax = end	symbol of string
-     81	0154  AB				     stosw			     ; mov es:[di], ax && di +=	2
-     82
-     83	0155  C3				     ret
-     84	0156			     MakeStrFrame    endp
-     85
-     86				     ;------------------------------------------------------------------------------
-     87				     ; PutString     Func to put string	to consol
-     88				     ; Entry:	     ah/ al - color/ symbol
-     89				     ;		     cx	    - size of text
-     90				     ;		     di	    - start of print
-     91				     ; Exit:	     None
-     92				     ; Destroy:	     es, cx
-     93				     ;------------------------------------------------------------------------------
-     94	0156			     PutString	     proc
-     95	0156  57				     push di			     ; ptr of start of print
-     96										     ; pushed to stack
-     97	0157  E8 0005				     call SetEsVideoSeg		     ; di = 0b800h; es = di
-     98	015A  5F				     pop di			     ; ptr of start of print
-     99										     ; popped from stack
-    100	015B  AB		     NewChar:	     stosw			     ; mov es:[di], ax && di +=	2
-    101	015C  E2 FD				     loop   NewChar		     ; cx -= 1;	cx = 0?; goto NewChar
-    102	015E  C3				     ret
-    103	015F			     PutString	     endp
-    104
-    105				     ;------------------------------------------------------------------------------
-    106				     ; SetEsVideoSeg Func to set ptr of	videoseg to es
-    107				     ; Entry:	     None
-    108				     ; Exit:	     None
-    109				     ; Destroy:	     es, di
-    110				     ;------------------------------------------------------------------------------
-    111	015F			     SetEsVideoSeg   proc
-    112	015F  BF B800				     mov  di, 0b800h		     ; VIDEOSEG
-    113	0162  8E C7				     mov  es, di		     ; es = videoseg
-    114	0164  C3				     ret
-Turbo Assembler	 Version 4.1	    02/10/25 01:14:05	    Page 3
+     58	015A  E8 0031				     call MakeStrFrame		     ; make first string of frame
+     59	015D  59				     pop  cx			     ; pop cx from stack
+     60	015E  83 EE 02				     sub  si, 2			     ; si -= 2;	si - number
+     61										     ; of middle strings
+     62	0161  8B 46 00				     mov  ax, SS:[bp]		     ; ax - start  symbol of
+     63										     ; middle strings
+     64	0164  8B 5E 02				     mov  bx, SS:[bp + 2]	     ; bx - middle symbol of
+     65										     ; middle strings
+     66	0167  8B 56 04				     mov  dx, SS:[bp + 4]	     ; dx - end	   symbol of
+     67										     ; middle strings
+     68	016A  83 C7 50		     MakeMiddle:     add  di, 80		     ; di to next string
+     69	016D  51				     push cx			     ; save cx
+     70	016E  E8 001D				     call MakeStrFrame		     ; make middle string
+     71	0171  59				     pop  cx			     ; cx = saved value	of cx
+     72										     ; cx - len	of frame
+     73	0172  4E				     dec  si			     ; si--;
+     74	0173  83 FE 00				     cmp  si, 0			     ; si = 0?
+     75	0176  75 F2				     jne  MakeMiddle		     ; loop
+     76	0178  83 C7 50				     add  di, 80		     ; di to next string
+     77	017B  8B 46 06				     mov  ax, SS:[bp + 6]	     ; ax - start  symbol of
+     78										     ; end strings
+     79	017E  8B 5E 08				     mov  bx, SS:[bp + 8]	     ; bx - middle symbol of
+     80										     ; end strings
+     81	0181  8B 56 0A				     mov  dx, SS:[bp + 10]	     ; dx - end	   symbol of
+     82										     ; end strings
+     83	0184  E8 0007				     call MakeStrFrame		     ; make end	string of frame
+     84	0187  5D				     pop bp			     ; bp from stack
+     85	0188  8B E5				     mov sp, bp			     ; sp = bp
+     86	018A  83 C4 0C				     add sp, 2 * 6		     ; clear stack
+     87
+     88	018D  C3				     ret
+     89	018E			     MakeFrame	     endp
+     90
+     91				     ;------------------------------------------------------------------------------
+     92				     ; MakeStrFrame  Func to make string of frame
+     93				     ; Entry:	     cx	    - len of string
+     94				     ;		     ax	    - first symbol of string (color - ah)
+     95				     ;		     bx	    - middle symbol of string (color - ah)
+     96				     ;		     dx	    - end   symbol of string (color - ah)
+     97				     ;		     di	    - start of print
+     98				     ; Exit:	     None
+     99				     ; Destroy:	     di, es, ax, cx
+    100				     ;------------------------------------------------------------------------------
+    101	018E			     MakeStrFrame    proc
+    102	018E  57				     push di			     ; ptr of start of print
+    103										     ; pushed to stack
+    104	018F  E8 0017				     call SetEsVideoSeg		     ; di = 0b800h; es = di
+    105	0192  5F				     pop  di			     ; ptr of start of print
+    106										     ; popped from stack
+    107	0193  AB				     stosw			     ; mov es:[di], ax && di +=	2
+    108	0194  8B C3				     mov  ax, bx		     ; ax = middle symbol of string
+    109	0196  83 E9 02				     sub  cx, 2			     ; cx -= 2;	cx = number
+    110										     ; of middle symbols
+    111	0199  E8 0004				     call PutString		     ; put all middle symbols
+    112	019C  8B C2				     mov  ax, dx		     ; ax = end	symbol of string
+    113	019E  AB				     stosw			     ; mov es:[di], ax && di +=	2
+    114
+Turbo Assembler	 Version 4.1	    02/10/25 11:41:53	    Page 3
 stvale~1.asm
 
 
 
-    115	0165			     SetEsVideoSeg   endp
-    116
-    117				     end	     Start
-Turbo Assembler	 Version 4.1	    02/10/25 01:14:05	    Page 4
+    115	019F  C3				     ret
+    116	01A0			     MakeStrFrame    endp
+    117
+    118				     ;------------------------------------------------------------------------------
+    119				     ; PutString     Func to put string	to consol
+    120				     ; Entry:	     ah/ al - color/ symbol
+    121				     ;		     cx	    - size of text
+    122				     ;		     di	    - start of print
+    123				     ; Exit:	     None
+    124				     ; Destroy:	     es, cx
+    125				     ;------------------------------------------------------------------------------
+    126	01A0			     PutString	     proc
+    127	01A0  57				     push di			     ; ptr of start of print
+    128										     ; pushed to stack
+    129	01A1  E8 0005				     call SetEsVideoSeg		     ; di = 0b800h; es = di
+    130	01A4  5F				     pop di			     ; ptr of start of print
+    131										     ; popped from stack
+    132	01A5  AB		     NewChar:	     stosw			     ; mov es:[di], ax && di +=	2
+    133	01A6  E2 FD				     loop   NewChar		     ; cx -= 1;	cx = 0?; goto NewChar
+    134	01A8  C3				     ret
+    135	01A9			     PutString	     endp
+    136
+    137				     ;------------------------------------------------------------------------------
+    138				     ; SetEsVideoSeg Func to set ptr of	videoseg to es
+    139				     ; Entry:	     None
+    140				     ; Exit:	     None
+    141				     ; Destroy:	     es, di
+    142				     ;------------------------------------------------------------------------------
+    143	01A9			     SetEsVideoSeg   proc
+    144	01A9  BF B800				     mov  di, 0b800h		     ; VIDEOSEG
+    145	01AC  8E C7				     mov  es, di		     ; es = videoseg
+    146	01AE  C3				     ret
+    147	01AF			     SetEsVideoSeg   endp
+    148
+    149				     end	     Start
+Turbo Assembler	 Version 4.1	    02/10/25 11:41:53	    Page 4
 Symbol Table
 
 
@@ -140,7 +172,7 @@ Symbol Name			  Type	 Value
 
 ??DATE				  Text	 "02/10/25"
 ??FILENAME			  Text	 "stvale~1"
-??TIME				  Text	 "01:14:05"
+??TIME				  Text	 "11:41:53"
 ??VERSION			  Number 040A
 @32BIT				  Text	 0
 @CODE				  Text	 DGROUP
@@ -154,17 +186,17 @@ Symbol Name			  Type	 Value
 @MODEL				  Text	 1
 @STACK				  Text	 DGROUP
 @WORDSIZE			  Text	 2
-MAKEFRAME			  Near	 DGROUP:0120
-MAKEMIDDLE			  Near	 DGROUP:0129
-MAKESTRFRAME			  Near	 DGROUP:0144
-NEWCHAR				  Near	 DGROUP:015B
-PUTSTRING			  Near	 DGROUP:0156
-SETESVIDEOSEG			  Near	 DGROUP:015F
+MAKEFRAME			  Near	 DGROUP:0158
+MAKEMIDDLE			  Near	 DGROUP:016A
+MAKESTRFRAME			  Near	 DGROUP:018E
+NEWCHAR				  Near	 DGROUP:01A5
+PUTSTRING			  Near	 DGROUP:01A0
+SETESVIDEOSEG			  Near	 DGROUP:01A9
 START				  Near	 DGROUP:0100
 
 Groups & Segments		  Bit Size Align  Combine Class
 
 DGROUP				  Group
   _DATA				  16  0000 Word	  Public  DATA
-  _TEXT				  16  0165 Word	  Public  CODE
+  _TEXT				  16  01AF Word	  Public  CODE
 
