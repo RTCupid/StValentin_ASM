@@ -28,8 +28,9 @@ Start:          A db 9 dup(?)                   ; array of frame's symbols
                 mov  [bx][si], 03h              ; end    symbol of end string
 
                 mov  ah, 09h                    ; color of frame
-                mov  cx, 20                     ; len   of frame
+                mov  cx, 40                     ; len   of frame
                 mov  cx, 5                      ; high  of frame
+                mov  di, 10 * 80 * 2 + 20 * 2   ; start of print
 
                 call MakeFrame                  ; make frame
 
@@ -41,13 +42,17 @@ Start:          A db 9 dup(?)                   ; array of frame's symbols
 ;               bx     - ptr   of array of the symbols for frame
 ;               cx     - len   of frame
 ;               dx     - high  of frame
+;               di     - start of print (upper left cornel)
 ; Exit:         None
-; Destroy:      ax, bx, cx, dx, si
+; Destroy:      ax, bx, cx, dx, si, di, es
 ;------------------------------------------------------------------------------
 MakeFrame       proc
+                push di                         ; save start of print in stack
+                call SetEsVideoSeg              ; di = 0b800h; es = di
+                pop  di                         ; back start of print
                 B db 3 dup(?)                   ; B - array of symbols
                                                 ; for string of frame
-                lea  si, B                       ; si = B
+                lea  si, B                      ; si = B
                 push cx                         ; save cx in stack
                 mov  cx, 0                      ; start index of elems B
                 mov  [si][cx], [bx][cx]         ; start  symbol of first string
@@ -58,63 +63,72 @@ MakeFrame       proc
                 inc  cx                         ; cx++
                 mov  [si][cx], [bx][cx]         ; end    symbol of first string
                                                 ; to array B
-                pop cx                          ; save cx in stack
+                pop  cx                         ; cx = len of frame
+                push cx                         ; save cx in stack
                 call MakeStrFrame               ; make first string of frame
                 pop  cx                         ; pop cx from stack
-                sub  si, 2                      ; si -= 2; si - number
+                sub  dx, 2                      ; dx -= 2; dx - number
                                                 ; of middle strings
-                mov  ax, SS:[bp]                ; ax - start  symbol of
-                                                ; middle strings
-                mov  bx, SS:[bp + 2]            ; bx - middle symbol of
-                                                ; middle strings
-                mov  dx, SS:[bp + 4]            ; dx - end    symbol of
-                                                ; middle strings
+                push cx                         ; save cx in stack
+                mov  cx, 3                      ; start index of elems B
+                mov  [si][cx], [bx][cx]         ; start  symbol of middle string
+                                                ; to array B
+                inc  cx                         ; cx++
+                mov  [si][cx], [bx][cx]         ; middle symbol of middle string
+                                                ; to array B
+                inc  cx                         ; cx++
+                mov  [si][cx], [bx][cx]         ; end    symbol of middle string
+                                                ; to array B
+                pop  cx                         ; cx = len of frame
+
 MakeMiddle:     add  di, 80                     ; di to next string
                 push cx                         ; save cx
                 call MakeStrFrame               ; make middle string
                 pop  cx                         ; cx = saved value of cx
                                                 ; cx - len of frame
-                dec  si                         ; si--;
-                cmp  si, 0                      ; si = 0?
+                dec  dx                         ; dx--;
+                cmp  dx, 0                      ; dx = 0?
                 jne  MakeMiddle                 ; loop
                 add  di, 80                     ; di to next string
-                mov  ax, SS:[bp + 6]            ; ax - start  symbol of
-                                                ; end strings
-                mov  bx, SS:[bp + 8]            ; bx - middle symbol of
-                                                ; end strings
-                mov  dx, SS:[bp + 10]           ; dx - end    symbol of
-                                                ; end strings
+                push cx                         ; save cx in stack
+                mov  cx, 6                      ; start index of elems B
+                mov  [si][cx], [bx][cx]         ; start  symbol of end string
+                                                ; to array B
+                inc  cx                         ; cx++
+                mov  [si][cx], [bx][cx]         ; middle symbol of end string
+                                                ; to array B
+                inc  cx                         ; cx++
+                mov  [si][cx], [bx][cx]         ; end    symbol of end string
+                                                ; to array B
+                pop  cx                         ; cx = len of frame
                 call MakeStrFrame               ; make end string of frame
-                pop bp                          ; bp from stack
-                mov sp, bp                      ; sp = bp
-                add sp, 2 * 6                   ; clear stack
 
                 ret
 MakeFrame       endp
 
 ;------------------------------------------------------------------------------
 ; MakeStrFrame  Func to make string of frame
-; Entry:        cx     - len of string
-;               ax     - first symbol of string (color - ah)
-;               bx     - middle symbol of string (color - ah)
-;               dx     - end   symbol of string (color - ah)
+; Entry:        ah     - color of string
+;               cx     - len of string
+;               si     - array of symbol for string
 ;               di     - start of print
+;               es     - videoseg
 ; Exit:         None
-; Destroy:      di, es, ax, cx
+; Destroy:      ax, cx, si
 ;------------------------------------------------------------------------------
 MakeStrFrame    proc
-                push di                         ; ptr of start of print
-                                                ; pushed to stack
-                call SetEsVideoSeg              ; di = 0b800h; es = di
-                pop  di                         ; ptr of start of print
-                                                ; popped from stack
+                push di
+                lodsb                           ; ax = first symbol of string
+                                                ; mov al, ds:[si] && inc si
                 stosw                           ; mov es:[di], ax && di += 2
-                mov  ax, bx                     ; ax = middle symbol of string
+                lodsb                           ; ax = middle symbol of string
+                                                ; mov al, ds:[si] && inc si
                 sub  cx, 2                      ; cx -= 2; cx = number
                                                 ; of middle symbols
                 call PutString                  ; put all middle symbols
-                mov  ax, dx                     ; ax = end symbol of string
+                lodsb                           ; ax = end symbol of string
                 stosw                           ; mov es:[di], ax && di += 2
+                pop  di
 
                 ret
 MakeStrFrame    endp
@@ -124,14 +138,11 @@ MakeStrFrame    endp
 ; Entry:        ah/ al - color/ symbol
 ;               cx     - size of text
 ;               di     - start of print
+;               es     - videoseg
 ; Exit:         None
 ; Destroy:      es, cx
 ;------------------------------------------------------------------------------
 PutString       proc
-                push di                         ; ptr of start of print
-                                                ; pushed to stack
-                call SetEsVideoSeg              ; di = 0b800h; es = di
-                pop di                          ; ptr of start of print
                                                 ; popped from stack
 NewChar:        stosw                           ; mov es:[di], ax && di += 2
                 loop   NewChar                  ; cx -= 1; cx = 0?; goto NewChar
