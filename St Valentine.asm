@@ -5,50 +5,60 @@
 .model tiny
 .code
 org 100h
-Start:          mov  ax, 09c9h                  ; start  symbol of first string
-                                                ; (ah - color, al - symbol)
-                mov  bx, 09cdh                  ; middle symbol of first string
-                                                ; (bh - color, bl - symbol)
-                mov  dx, 09bbh                  ; end    symbol of first string
-                                                ; (dh - color, dl - symbol)
-                mov  cx, 40                     ; cx - len  of frame
-                mov  si, 5                      ; si - high of frame
-                mov  di, 10 * 80 * 2 + 20 * 2   ; di - ptr of upper left corner
-                push 09bch                      ; end    symbol of end string
-                push 09cdh                      ; middle symbol of end string
-                push 09c8h                      ; start  symbol of end string
-                push 09bah                      ; end    symbol of
-                                                ; middle strings
-                push 0900h                      ; middle symbol of
-                                                ; middle strings
-                push 09bah                      ; start  symbol of
-                                                ; middle strings
-                mov  bp, sp                     ; bp - up of stack
+Start:          A db 9 dup(?)                   ; array of frame's symbols
+                lea  bx, A                      ; bx = ptr of array of symbols
+
+                mov  si, 0                      ; si = offset from start array
+                mov  [bx][si], 03h              ; start  symbol of first string
+                inc  si                         ; si += 1
+                mov  [bx][si], 03h              ; middle symbol of first string
+                inc  si                         ; si += 1
+                mov  [bx][si], 03h              ; end    symbol of first string
+                inc  si                         ; si += 1
+                mov  [bx][si], 03h              ; start  symbol of middle str
+                inc  si                         ; si += 1
+                mov  [bx][si], 00h              ; middle symbol of middle str
+                inc  si                         ; si += 1
+                mov  [bx][si], 03h              ; end    symbol of middle str
+                inc  si                         ; si += 1
+                mov  [bx][si], 03h              ; start  symbol of end string
+                inc  si                         ; si += 1
+                mov  [bx][si], 03h              ; middle symbol of end string
+                inc  si                         ; si += 1
+                mov  [bx][si], 03h              ; end    symbol of end string
+
+                mov  ah, 09h                    ; color of frame
+                mov  cx, 20                     ; len   of frame
+                mov  cx, 5                      ; high  of frame
+
                 call MakeFrame                  ; make frame
 
                 mov  ax, 4c00h                  ; DOS Fn 4ch = exit (al)
                 int  21h
 ;------------------------------------------------------------------------------
 ; MakeFrame     Func to make frame
-; Entry:        ax     - start  symbol of first frame's string
-;               bx     - middle symbol of first frame's string
-;               dx     - end    symbol of first frame's string
-;               cx     - len  of frame
-;               si     - high of frame
-;               di     - ptr  of upper left corner of the frame
-;               stack  - end    symbol of end string
-;                        middle symbol of end string
-;                        start  symbol of end string
-;                        end    symbol of middle strings
-;                        middle symbol of middle strings
-;                        start  symbol of middle strings (bp = up)
-;               bp     - up   of stack
+; Entry:        ah     - color of frame
+;               bx     - ptr   of array of the symbols for frame
+;               cx     - len   of frame
+;               dx     - high  of frame
 ; Exit:         None
-; Destroy:      ax, bx, cx, dx, di, si
+; Destroy:      ax, bx, cx, dx, si
 ;------------------------------------------------------------------------------
 MakeFrame       proc
-                push bp                         ; save bp
+                B db 3 dup(?)                   ; B - array of symbols
+                                                ; for string of frame
+                lea  si, B                       ; si = B
                 push cx                         ; save cx in stack
+                mov  cx, 0                      ; start index of elems B
+                mov  [si][cx], [bx][cx]         ; start  symbol of first string
+                                                ; to array B
+                inc  cx                         ; cx++
+                mov  [si][cx], [bx][cx]         ; middle symbol of first string
+                                                ; to array B
+                inc  cx                         ; cx++
+                mov  [si][cx], [bx][cx]         ; end    symbol of first string
+                                                ; to array B
+                pop cx                          ; save cx in stack
                 call MakeStrFrame               ; make first string of frame
                 pop  cx                         ; pop cx from stack
                 sub  si, 2                      ; si -= 2; si - number
