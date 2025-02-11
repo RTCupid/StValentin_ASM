@@ -70,7 +70,7 @@ SkipSpaces      proc
 StartSkip:      push bx                         ; save value bx in stack
                                                 ; bx = ptr to command line
                 mov  byte ptr bx, [bx]          ; bx = [bx]
-                cmp  bl, 20h                     ; if ([bx] != ' '){
+                cmp  bl, 20h                    ; if ([bx] != ' '){
                 pop  bx                         ; back bx
                 jne  EndSkip                    ; goto EndSkip:}
                 inc  bx                         ; else { bx++;
