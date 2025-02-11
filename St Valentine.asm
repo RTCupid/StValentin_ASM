@@ -10,7 +10,7 @@ Start:          call ReadCmdLine                ; read info about frame
                 lea  si, A                      ; si = ptr of array of symbols
 
                 mov  ah, 09h                    ; color of frame
-                mov  cx, 40                     ; len   of frame
+                ;mov  cx, 40                     ; len   of frame
                 mov  dx, 5                      ; high  of frame
                 mov  di, 10 * 80 * 2 + 20 * 2   ; start of print
 
@@ -32,7 +32,7 @@ ReadCmdLine     proc
                 mov  bx, 81h                    ; bx = start of command line
                 call SkipSpaces                 ; skip all spaces before arg
                                                 ; with len of frame
-                ;call Atoi                       ; read info about len of frame
+                call Atoi                       ; read info about len of frame
                                                 ; and convert it to number
                                                 ; in register cx
                 ;call SkipSpaces                 ; skip all spaces before arg
@@ -61,6 +61,33 @@ ReadCmdLine     proc
 ReadCmdLine     endp
 
 ;------------------------------------------------------------------------------
+; Atoi          Func to read command line and make number from string
+;               to register cx
+; Entry:        bx = start a number in command line
+; Exit:         cx = number from cmd line
+; Destroy:      bx, cx, si
+;------------------------------------------------------------------------------
+Atoi            proc
+                mov  cx, 0                      ; cx = 0
+                mov  si, bx                     ; si = start of number
+                                                ; in cmd line
+                xor  ax, ax                     ; mov ax, 0
+                lodsb                           ; mov al, ds:[si] && inc si
+                sub  ax, 30h                    ; ax = first char of number
+                add  cx, ax                     ; cx += ax
+                xor ax, ax                      ; mov ax, 0
+                lodsb                           ; mov al, ds:[si] && inc si
+                sub  ax, 30h                    ; ax = second char of number
+                N db 10                         ; N = 10, helping variable
+                mul  N                          ; ax *= 10
+                add  cx, ax                     ; cx += ax (finish number)
+                mov  bx, si                     ; bx = ptr of next symbol
+                                                ; after number in cmd line
+
+                ret
+Atoi            endp
+
+;------------------------------------------------------------------------------
 ; SkipSpaces    Func to skip all space symbols before info about frame
 ; Entry:        None
 ; Exit:         bx = ptr to start info about frame
@@ -69,7 +96,7 @@ ReadCmdLine     endp
 SkipSpaces      proc
 StartSkip:      push bx                         ; save value bx in stack
                                                 ; bx = ptr to command line
-                mov  byte ptr bx, [bx]          ; bx = [bx]
+                mov  byte ptr bl, [bx]          ; bl = [bx]
                 cmp  bl, 20h                    ; if ([bx] != ' '){
                 pop  bx                         ; back bx
                 jne  EndSkip                    ; goto EndSkip:}
