@@ -5,7 +5,9 @@
 .model tiny
 .code
 org 100h
-Start:          lea  si, A                      ; si = ptr of array of symbols
+Start:          call ReadCmdLine                ; read info about frame
+                                                ; from command line
+                lea  si, A                      ; si = ptr of array of symbols
 
                 mov  ah, 09h                    ; color of frame
                 mov  cx, 40                     ; len   of frame
@@ -16,6 +18,67 @@ Start:          lea  si, A                      ; si = ptr of array of symbols
 
                 mov  ax, 4c00h                  ; DOS Fn 4ch = exit (al)
                 int  21h
+;------------------------------------------------------------------------------
+; ReadCmdLine   Func to read info about frame parametres
+; Entry:        None
+; Exit:         si = ptr   of array of symbols
+;               ah = color of frame
+;               cx = len   of frame
+;               dx = high  of frame
+;               bx = love letter
+; Destroy:      si, ah, cx, dx, bx
+;------------------------------------------------------------------------------
+ReadCmdLine     proc
+                mov  bx, 81h                    ; bx = start of command line
+                call SkipSpaces                 ; skip all spaces before arg
+                                                ; with len of frame
+                ;call Atoi                       ; read info about len of frame
+                                                ; and convert it to number
+                                                ; in register cx
+                ;call SkipSpaces                 ; skip all spaces before arg
+                                                ; with high of frame
+                ;push cx                         ; save len  of frame
+                                                ; (cx) in stack
+                ;call Atoi                       ; read info about high of frame
+                                                ; and convert it to number
+                                                ; in register cx
+                ;mov  dx, cx                     ; dx      = high of frame
+                ;pop  cx                         ; back cx = len  of frame
+                ;call SkipSpaces                 ; skip all spaces before arg
+                                                ; with color of frame
+                ;call Atoih                      ; read info about color
+                                                ; of frame from cmd line and
+                                                ; record it to byte ah
+                ;call SkipSpaces                 ; skip all spaces before arg
+                                                ; with mode of frame
+                ;call FindMode                   ; read mode from [bx] &&
+                                                ; si = ptr to array of symbols
+                                                ; to make frame
+                ;call SkipSpaces                 ; skip all spaces before array
+                                                ; with text about love
+                                                ; bx = start of text
+                ret
+ReadCmdLine     endp
+
+;------------------------------------------------------------------------------
+; SkipSpaces    Func to skip all space symbols before info about frame
+; Entry:        None
+; Exit:         bx = ptr to start info about frame
+; Destroy:      bx
+;------------------------------------------------------------------------------
+SkipSpaces      proc
+StartSkip:      push bx                         ; save value bx in stack
+                                                ; bx = ptr to command line
+                mov  byte ptr bx, [bx]          ; bx = [bx]
+                cmp  bl, 20h                     ; if ([bx] != ' '){
+                pop  bx                         ; back bx
+                jne  EndSkip                    ; goto EndSkip:}
+                inc  bx                         ; else { bx++;
+                jmp  StartSkip                  ; goto StartSkip:}
+
+EndSkip:        ret
+SkipSpaces      endp
+
 ;------------------------------------------------------------------------------
 ; MakeFrame     Func to make frame
 ; Entry:        ah     - color of frame
