@@ -5,7 +5,7 @@
 .model tiny
 .code
 org 100h
-Start:          lea  bx, A                      ; bx = ptr of array of symbols
+Start:          lea  si, A                      ; si = ptr of array of symbols
 
                 mov  ah, 09h                    ; color of frame
                 mov  cx, 40                     ; len   of frame
@@ -19,12 +19,12 @@ Start:          lea  bx, A                      ; bx = ptr of array of symbols
 ;------------------------------------------------------------------------------
 ; MakeFrame     Func to make frame
 ; Entry:        ah     - color of frame
-;               bx     - ptr   of array of the symbols for frame
+;               si     - ptr   of array of the symbols for frame
 ;               cx     - len   of frame
 ;               dx     - high  of frame
 ;               di     - start of print (upper left cornel)
 ; Exit:         None
-; Destroy:      ax, bx, cx, dx, di, es
+; Destroy:      ax, si, cx, dx, di, es
 ;------------------------------------------------------------------------------
 MakeFrame       proc
                 push di                         ; save start of print in stack
@@ -36,19 +36,21 @@ MakeFrame       proc
                 pop  cx                         ; pop cx from stack
                 sub  dx, 2                      ; dx -= 2; dx = number
                                                 ; of middle strings
-                lea  bx, [bx + 3]               ; bx = ptr of start symbol
-                                                ; for middle string in array
 MakeMiddle:     add  di, 80 * 2                 ; di to next string
                 push cx                         ; save cx
+                push si                         ; save si
                 call MakeStrFrame               ; make middle string
+                pop si                          ; si = &(start symbol of
+                                                ; middle strings)
                 pop  cx                         ; cx = len of frame
                 dec  dx                         ; dx--;
                 cmp  dx, 0                      ; dx = 0?
                 jne  MakeMiddle                 ; loop
+
+                add  si, 3                      ; si = &(start symbol of
+                                                ; end string)
                 add  di, 80 * 2                 ; di to next string
 
-                lea  bx, [bx + 3]               ; bx = ptr of start symbol
-                                                ; for end string in array
                 call MakeStrFrame               ; make end string of frame
 
                 ret
@@ -57,7 +59,7 @@ MakeFrame       endp
 ;------------------------------------------------------------------------------
 ; MakeStrFrame  Func to make string of frame
 ; Entry:        ah     - color of string
-;               bx     - array of symbol for string
+;               si     - array of symbol for string
 ;               cx     - len of string
 ;               di     - start of print string
 ;               es     - videoseg
@@ -66,8 +68,7 @@ MakeFrame       endp
 ;------------------------------------------------------------------------------
 MakeStrFrame    proc
                 push di                         ; save di = start of string
-                lea  si, [bx]                   ; si = array of symbols for
-                                                ; this string
+
                 lodsb                           ; ax = first symbol of string
                                                 ; mov al, ds:[si] && inc si
                 stosw                           ; mov es:[di], ax && di += 2
@@ -78,6 +79,7 @@ MakeStrFrame    proc
                                                 ; of middle symbols
                 call PutString                  ; put all middle symbols
                 lodsb                           ; ax = end symbol of string
+                                                ; mov al, ds:[si] && inc si
                 stosw                           ; mov es:[di], ax && di += 2
                 pop  di                         ; back di = start of string
 
@@ -95,7 +97,7 @@ MakeStrFrame    endp
 ;------------------------------------------------------------------------------
 PutString       proc
                 rep stosw                       ; mov es:[di], ax && di += 2
-                                                ; cx -= 1; cx = 0?; goto NewChar
+                                                ; cx -= 1; cx = 0?; make loop
                 ret
 PutString       endp
 
