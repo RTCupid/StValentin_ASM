@@ -94,9 +94,8 @@ MakeStrFrame    endp
 ; Destroy:      es, cx, di
 ;------------------------------------------------------------------------------
 PutString       proc
-NewChar:        stosw                           ; mov es:[di], ax && di += 2
-                loop   NewChar                  ; cx -= 1; cx = 0?; goto NewChar
-
+                rep stosw                       ; mov es:[di], ax && di += 2
+                                                ; cx -= 1; cx = 0?; goto NewChar
                 ret
 PutString       endp
 

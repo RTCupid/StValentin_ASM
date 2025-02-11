@@ -1,4 +1,4 @@
-Turbo Assembler	 Version 4.1	    02/11/25 12:02:05	    Page 1
+Turbo Assembler	 Version 4.1	    02/11/25 15:59:47	    Page 1
 stvale~1.asm
 
 
@@ -10,7 +10,7 @@ stvale~1.asm
       5	0000			     .model tiny
       6	0000			     .code
       7				     org 100h
-      8	0100  BB 015Ar		     Start:	     lea  bx, A			     ; bx = ptr	of array of symbols
+      8	0100  BB 0159r		     Start:	     lea  bx, A			     ; bx = ptr	of array of symbols
       9
      10	0103  B4 09				     mov  ah, 09h		     ; color of	frame
      11	0105  B9 0028				     mov  cx, 40		     ; len   of	frame
@@ -33,7 +33,7 @@ stvale~1.asm
      28				     ;------------------------------------------------------------------------------
      29	0116			     MakeFrame	     proc
      30	0116  57				     push di			     ; save start of print in stack
-     31	0117  E8 003A				     call SetEsVideoSeg		     ; di = 0b800h; es = di
+     31	0117  E8 0039				     call SetEsVideoSeg		     ; di = 0b800h; es = di
      32	011A  5F				     pop  di			     ; back start of print
      33
      34	011B  51				     push cx			     ; save cx in stack
@@ -60,7 +60,7 @@ stvale~1.asm
      55	0140			     MakeFrame	     endp
      56
      57				     ;------------------------------------------------------------------------------
-Turbo Assembler	 Version 4.1	    02/11/25 12:02:05	    Page 2
+Turbo Assembler	 Version 4.1	    02/11/25 15:59:47	    Page 2
 stvale~1.asm
 
 
@@ -104,35 +104,34 @@ stvale~1.asm
      94				     ; Destroy:	     es, cx, di
      95				     ;------------------------------------------------------------------------------
      96	0150			     PutString	     proc
-     97	0150  AB		     NewChar:	     stosw			     ; mov es:[di], ax && di +=	2
-     98	0151  E2 FD				     loop   NewChar		     ; cx -= 1;	cx = 0?; goto NewChar
-     99
-    100	0153  C3				     ret
-    101	0154			     PutString	     endp
-    102
-    103				     ;------------------------------------------------------------------------------
-    104				     ; SetEsVideoSeg Func to set ptr of	videoseg to es
-    105				     ; Entry:	     None
-    106				     ; Exit:	     None
-    107				     ; Destroy:	     es, di
-    108				     ;------------------------------------------------------------------------------
-    109	0154			     SetEsVideoSeg   proc
-    110	0154  BF B800				     mov  di, 0b800h		     ; VIDEOSEG
-    111	0157  8E C7				     mov  es, di		     ; es = videoseg
-    112	0159  C3				     ret
-    113	015A			     SetEsVideoSeg   endp
-    114
-Turbo Assembler	 Version 4.1	    02/11/25 12:02:05	    Page 3
+     97	0150  F3> AB				     rep stosw			     ; mov es:[di], ax && di +=	2
+     98										     ; cx -= 1;	cx = 0?; goto NewChar
+     99	0152  C3				     ret
+    100	0153			     PutString	     endp
+    101
+    102				     ;------------------------------------------------------------------------------
+    103				     ; SetEsVideoSeg Func to set ptr of	videoseg to es
+    104				     ; Entry:	     None
+    105				     ; Exit:	     None
+    106				     ; Destroy:	     es, di
+    107				     ;------------------------------------------------------------------------------
+    108	0153			     SetEsVideoSeg   proc
+    109	0153  BF B800				     mov  di, 0b800h		     ; VIDEOSEG
+    110	0156  8E C7				     mov  es, di		     ; es = videoseg
+    111	0158  C3				     ret
+    112	0159			     SetEsVideoSeg   endp
+    113
+    114	0159  C9 CD BB BA 00 BA	C8+  A db 0c9h,	0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
+Turbo Assembler	 Version 4.1	    02/11/25 15:59:47	    Page 3
 stvale~1.asm
 
 
 
-    115	015A  C9 CD BB BA 00 BA	C8+  A db 0c9h,	0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
-    116	      CD BC
-    117										     ; array of	frame's	symbols
-    118
-    119				     end	     Start
-Turbo Assembler	 Version 4.1	    02/11/25 12:02:05	    Page 4
+    115	      CD BC
+    116										     ; array of	frame's	symbols
+    117
+    118				     end	     Start
+Turbo Assembler	 Version 4.1	    02/11/25 15:59:47	    Page 4
 Symbol Table
 
 
@@ -142,7 +141,7 @@ Symbol Name			  Type	 Value
 
 ??DATE				  Text	 "02/11/25"
 ??FILENAME			  Text	 "stvale~1"
-??TIME				  Text	 "12:02:05"
+??TIME				  Text	 "15:59:47"
 ??VERSION			  Number 040A
 @32BIT				  Text	 0
 @CODE				  Text	 DGROUP
@@ -156,18 +155,17 @@ Symbol Name			  Type	 Value
 @MODEL				  Text	 1
 @STACK				  Text	 DGROUP
 @WORDSIZE			  Text	 2
-A				  Byte	 DGROUP:015A
+A				  Byte	 DGROUP:0159
 MAKEFRAME			  Near	 DGROUP:0116
 MAKEMIDDLE			  Near	 DGROUP:0126
 MAKESTRFRAME			  Near	 DGROUP:0140
-NEWCHAR				  Near	 DGROUP:0150
 PUTSTRING			  Near	 DGROUP:0150
-SETESVIDEOSEG			  Near	 DGROUP:0154
+SETESVIDEOSEG			  Near	 DGROUP:0153
 START				  Near	 DGROUP:0100
 
 Groups & Segments		  Bit Size Align  Combine Class
 
 DGROUP				  Group
   _DATA				  16  0000 Word	  Public  DATA
-  _TEXT				  16  0163 Word	  Public  CODE
+  _TEXT				  16  0162 Word	  Public  CODE
 
