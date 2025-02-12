@@ -65,25 +65,28 @@ ReadCmdLine     endp
 ;               to register cx
 ; Entry:        bx = start a number in command line
 ; Exit:         cx = number from cmd line
-; Destroy:      bx, cx, si
+; Destroy:      bx, cx, si, dx
 ;------------------------------------------------------------------------------
 Atoi            proc
                 mov  cx, 0                      ; cx = 0
                 mov  si, bx                     ; si = start of number
                                                 ; in cmd line
-                xor  ax, ax                     ; mov ax, 0
+                N db 10                         ; N = 10
+NewDigit:       xor  ax, ax                     ; mov ax, 0
                 lodsb                           ; mov al, ds:[si] && inc si
-                sub  ax, 30h                    ; ax = first char of number
+                sub  ax, 30h                    ; ax = last digit of number
+                push ax                         ; save ax
+                mov  ax, cx                     ; ax = cx
+                mul  N                          ; ax*= 10
+                mov  cx, ax                     ; cx = ax (result: cx *= 10)
+                pop ax                          ; back ax from stack
+                                                ; ax = last digit of number
                 add  cx, ax                     ; cx += ax
-                xor ax, ax                      ; mov ax, 0
-                lodsb                           ; mov al, ds:[si] && inc si
-                sub  ax, 30h                    ; ax = second char of number
-                N db 10                         ; N = 10, helping variable
-                mul  N                          ; ax *= 10
-                add  cx, ax                     ; cx += ax (finish number)
+                cmp  byte ptr ds:[si], 20h      ; if (si != ' ')
+                jne  NewDigit                   ; goto NewDigit: of number
+
                 mov  bx, si                     ; bx = ptr of next symbol
                                                 ; after number in cmd line
-
                 ret
 Atoi            endp
 
