@@ -9,7 +9,7 @@ Start:          call ReadCmdLine                ; read info about frame
                                                 ; from command line
                 lea  si, A                      ; si = ptr of array of symbols
 
-                mov  ah, 09h                    ; color of frame
+                ;mov  ah, 09h                    ; color of frame
                 ;mov  cx, 40                     ; len   of frame
                 ;mov  dx, 5                      ; high  of frame
                 mov  di, 10 * 80 * 2 + 20 * 2   ; start of print
@@ -46,7 +46,7 @@ ReadCmdLine     proc
                 pop  cx                         ; back cx = len  of frame
                 call SkipSpaces                 ; skip all spaces before arg
                                                 ; with color of frame
-                ;call Atoih                      ; read info about color
+                call Atoih                      ; read info about color
                                                 ; of frame from cmd line and
                                                 ; record it to byte ah
                 ;call SkipSpaces                 ; skip all spaces before arg
@@ -61,17 +61,55 @@ ReadCmdLine     proc
 ReadCmdLine     endp
 
 ;------------------------------------------------------------------------------
+; Atoih         Func to read command line and make number hex from string
+;               to register ah
+; Entry:        bx = start a number in command line
+; Exit:         ah = hex number from cmd line
+; Destroy:      bx, ax, si
+;------------------------------------------------------------------------------
+Atoih           proc
+                push cx                         ; save cx in stack
+                mov  cx, 0                      ; cx = 0
+                mov  si, bx                     ; si = start of number
+                                                ; in cmd line
+NewHexDigit:    xor  ax, ax                     ; mov ax, 0
+                lodsb                           ; mov al, ds:[si] && inc si
+
+                sub  ax, 60h                    ; if (ax > 60h){
+                ja   HexDigit                   ; goto HexDigit } <---(ax > 9)
+                add  ax, 30h                    ; else { ax += 30h}
+HexDigit:                                       ; ax = last digit of number
+                push ax                         ; save ax
+                mov  ax, cx                     ; ax = cx
+                mul  M                          ; ax*= 16
+                mov  cx, ax                     ; cx = ax (result: cx *= 16)
+                pop ax                          ; back ax from stack
+                                                ; ax = last digit of number
+                add  cx, ax                     ; cx += ax
+                cmp  byte ptr ds:[si], 68h      ; if (si == 'h'){
+                jne  NewHexDigit                ; goto NewHexDigit: of number }
+
+                inc  si                         ; si++, to skip 'h'
+                xor  ax, ax                     ; clean ax (ax = 0)
+                mov  ah, cl                     ; ah = color of frame from cl
+                mov  bx, si                     ; bx = ptr of next symbol
+                                                ; after number in cmd line
+                pop  cx                         ; cx = old value cx from stack
+
+                ret
+Atoih           endp
+
+;------------------------------------------------------------------------------
 ; Atoi          Func to read command line and make number from string
 ;               to register cx
 ; Entry:        bx = start a number in command line
 ; Exit:         cx = number from cmd line
-; Destroy:      bx, cx, si, dx
+; Destroy:      bx, cx, si
 ;------------------------------------------------------------------------------
 Atoi            proc
                 mov  cx, 0                      ; cx = 0
                 mov  si, bx                     ; si = start of number
                                                 ; in cmd line
-                N db 10                         ; N = 10
 NewDigit:       xor  ax, ax                     ; mov ax, 0
                 lodsb                           ; mov al, ds:[si] && inc si
                 sub  ax, 30h                    ; ax = last digit of number
@@ -206,6 +244,8 @@ SetEsVideoSeg   proc
                 ret
 SetEsVideoSeg   endp
 
+M db 16                                         ; M = 16
+N db 10                                         ; N = 10
 A db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
                                                 ; array of frame's symbols
 
