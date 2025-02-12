@@ -11,7 +11,7 @@ Start:          call ReadCmdLine                ; read info about frame
 
                 mov  ah, 09h                    ; color of frame
                 ;mov  cx, 40                     ; len   of frame
-                mov  dx, 5                      ; high  of frame
+                ;mov  dx, 5                      ; high  of frame
                 mov  di, 10 * 80 * 2 + 20 * 2   ; start of print
 
                 call MakeFrame                  ; make frame
@@ -35,16 +35,16 @@ ReadCmdLine     proc
                 call Atoi                       ; read info about len of frame
                                                 ; and convert it to number
                                                 ; in register cx
-                ;call SkipSpaces                 ; skip all spaces before arg
+                call SkipSpaces                 ; skip all spaces before arg
                                                 ; with high of frame
-                ;push cx                         ; save len  of frame
+                push cx                         ; save len  of frame
                                                 ; (cx) in stack
-                ;call Atoi                       ; read info about high of frame
+                call Atoi                       ; read info about high of frame
                                                 ; and convert it to number
                                                 ; in register cx
-                ;mov  dx, cx                     ; dx      = high of frame
-                ;pop  cx                         ; back cx = len  of frame
-                ;call SkipSpaces                 ; skip all spaces before arg
+                mov  dx, cx                     ; dx      = high of frame
+                pop  cx                         ; back cx = len  of frame
+                call SkipSpaces                 ; skip all spaces before arg
                                                 ; with color of frame
                 ;call Atoih                      ; read info about color
                                                 ; of frame from cmd line and
