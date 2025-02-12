@@ -7,7 +7,7 @@
 org 100h
 Start:          call ReadCmdLine                ; read info about frame
                                                 ; from command line
-                lea  si, A                      ; si = ptr of array of symbols
+                ;lea  si, A                      ; si = ptr of array of symbols
 
                 ;mov  ah, 09h                    ; color of frame
                 ;mov  cx, 40                     ; len   of frame
@@ -49,22 +49,77 @@ ReadCmdLine     proc
                 call Atoih                      ; read info about color
                                                 ; of frame from cmd line and
                                                 ; record it to byte ah
-                ;call SkipSpaces                 ; skip all spaces before arg
+                call SkipSpaces                 ; skip all spaces before arg
                                                 ; with mode of frame
-                ;call FindMode                   ; read mode from [bx] &&
+                call ModeFrame                  ; read mode from [bx] &&
                                                 ; si = ptr to array of symbols
                                                 ; to make frame
-                ;call SkipSpaces                 ; skip all spaces before array
+                call SkipSpaces                 ; skip all spaces before array
                                                 ; with text about love
                                                 ; bx = start of text
                 ret
 ReadCmdLine     endp
 
 ;------------------------------------------------------------------------------
+; ModeFrame     Func to find mode of frame in cmd line
+; Entry:        bx = ptr mode in command line
+; Exit:         si = start of array with symbols for frame
+;               bx = end of mode
+; Destroy:      bx, si, ax
+;------------------------------------------------------------------------------
+ModeFrame       proc
+                mov  si, bx                     ; si = ptr to number of mode
+                lodsb                           ; mov al, ds:[si] && inc si
+
+                cmp  al, 8                      ; if (mode = 8) {
+                jne  NotMode8                   ; goto Mode8}
+                lea  si, M8                     ; si = ptr to mode 8 array
+                jmp  EndFindMode                ; end of find mode
+
+NotMode8:       cmp  al, 7                      ; if (mode = 7) {
+                jne  NotMode7                   ; goto Mode7}
+                lea  si, M7                     ; si = ptr to mode 8 array
+                jmp  EndFindMode                ; end of find mode
+
+NotMode7:       cmp  al, 6                      ; if (mode = 6) {
+                jne  NotMode6                   ; goto Mode6}
+                lea  si, M6                     ; si = ptr to mode 8 array
+                jmp  EndFindMode                ; end of find mode
+
+NotMode6:       cmp  al, 5                      ; if (mode = 5) {
+                jne  NotMode5                   ; goto Mode5}
+                lea  si, M5                     ; si = ptr to mode 8 array
+                jmp  EndFindMode                ; end of find mode
+
+NotMode5:       cmp  al, 4                      ; if (mode = 4) {
+                jne  NotMode4                   ; goto Mode4}
+                lea  si, M4                     ; si = ptr to mode 8 array
+                jmp  EndFindMode                ; end of find mode
+
+NotMode4:       cmp  al, 3                      ; if (mode = 3) {
+                jne  NotMode3                   ; goto Mode3}
+                lea  si, M3                     ; si = ptr to mode 8 array
+                jmp  EndFindMode                ; end of find mode
+
+NotMode3:       cmp  al, 2                      ; if (mode = 2) {
+                jne  NotMode2                   ; goto Mode2}
+                lea  si, M2                     ; si = ptr to mode 8 array
+                jmp  EndFindMode                ; end of find mode
+
+NotMode2:       lea  si, M1                     ; si = ptr to mode 8 array
+                jmp  EndFindMode                ; end of find mode
+
+EndFindMode:    add  bx, 1                      ; bx = next symbol
+                                                ; after number of mode
+                ret
+Modeframe       endp
+
+;------------------------------------------------------------------------------
 ; Atoih         Func to read command line and make number hex from string
 ;               to register ah
 ; Entry:        bx = start a number in command line
 ; Exit:         ah = hex number from cmd line
+;               bx = ptr to next symbol after number in command line
 ; Destroy:      bx, ax, si
 ;------------------------------------------------------------------------------
 Atoih           proc
@@ -83,7 +138,7 @@ HexDigit:                                       ; ax = last digit of number
                 mov  ax, cx                     ; ax = cx
                 mul  M                          ; ax*= 16
                 mov  cx, ax                     ; cx = ax (result: cx *= 16)
-                pop ax                          ; back ax from stack
+                pop  ax                          ; back ax from stack
                                                 ; ax = last digit of number
                 add  cx, ax                     ; cx += ax
                 cmp  byte ptr ds:[si], 68h      ; if (si == 'h'){
@@ -104,6 +159,7 @@ Atoih           endp
 ;               to register cx
 ; Entry:        bx = start a number in command line
 ; Exit:         cx = number from cmd line
+;               bx = ptr to next symbol after number in command line
 ; Destroy:      bx, cx, si
 ;------------------------------------------------------------------------------
 Atoi            proc
@@ -246,8 +302,15 @@ SetEsVideoSeg   endp
 
 M db 16                                         ; M = 16
 N db 10                                         ; N = 10
-A db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
-                                                ; array of frame's symbols
+            ; arrays of frame's symbols
+M8 db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
+M7 db  03h,  03h,  03h,  03h, 00h,  03h,  03h,  03h,  03h
+M6 db 0dah, 0c4h, 0bfh, 0b3h, 00h, 0b3h, 0c0h, 0c4h, 0d9h
+M5 db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
+M4 db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
+M3 db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
+M2 db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
+M1 db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
 
 end             Start
 ;------------------------------------------------------------------------------
