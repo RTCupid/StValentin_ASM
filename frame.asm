@@ -24,10 +24,20 @@ Start:          call ReadCmdLine                ; read info about frame
 ; MakeText      Func to write text to frame
 ; Entry:        bx = ptr to strat of text in command line
 ;               di = start of print text
+;               es = videoseg
+;               ah = color of text
 ; Exit:         None
-; Destroy:      bx
+; Destroy:      bx, si, di
 ;------------------------------------------------------------------------------
 MakeText        proc
+                mov  si, bx                     ; si = bx
+                lodsb                           ; mov al, ds:[si]
+                                                ; inc si
+NewChar:        stosw                           ; mov es:[di], ax && di += 2
+                lodsb                           ; mov al, ds:[si]
+                                                ; inc si
+                cmp  al, 24h                    ; if (al != '$') {
+                jne  NewChar                    ; goto NewChar}
 
                 ret
 MakeText        endp
@@ -41,6 +51,7 @@ MakeText        endp
 FindPosText     proc
                 mov  di, 80                     ; di = 80
                 sub  di, cx                     ; di = ((80 - cx) / 2) * 2
+                add  di, 11 * 80 * 2            ; di to some middle string
                                                 ; di = start of text
                 ret
 FindPosText     endp
@@ -49,9 +60,10 @@ FindPosText     endp
 ; StrLen        Func to find len of string that end '$'
 ; Entry:        bx = start of text
 ; Exit:         cx = len of text
-; Destroy:      ax, cx, si
+; Destroy:      cx, si
 ;------------------------------------------------------------------------------
 StrLen          proc
+                push ax                         ; save old value of ax in stack
                 mov  si, bx                     ; si = bx
                 xor  cx, cx                     ; cx = 0
 
@@ -60,7 +72,7 @@ NewSymbol:      inc  cx                         ; cx++
                                                 ; inc si
                 cmp  al, 24h                    ; if (al != '$') {
                 jne  NewSymbol                  ; goto NewSymbol}
-
+                pop  ax                         ; back ax from stack
                 ret
 StrLen          endp
 
