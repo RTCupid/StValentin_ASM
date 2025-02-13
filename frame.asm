@@ -11,8 +11,55 @@ Start:          call ReadCmdLine                ; read info about frame
 
                 call MakeFrame                  ; make frame
 
+                call StrLen                     ; find size of text
+                call FindPosText                ; find position of text
+                                                ; di = start of print text
+                call MakeText                   ; write text to frame
+
                 mov  ax, 4c00h                  ; DOS Fn 4ch = exit (al)
                 int  21h
+
+;------------------------------------------------------------------------------
+; MakeText      Func to write text to frame
+; Entry:        bx = ptr to strat of text in command line
+;               di = start of print text
+; Exit:         None
+; Destroy:      bx
+;------------------------------------------------------------------------------
+MakeText        proc
+
+                ret
+MakeText        endp
+
+;------------------------------------------------------------------------------
+; FindPosText   Func to find position of text in video memory
+; Entry:        cx = len of text
+; Exit:         di = start of print text
+; Destroy:      di
+;------------------------------------------------------------------------------
+FindPosText     proc
+
+                ret
+FindPosText     endp
+
+;------------------------------------------------------------------------------
+; StrLen        Func to find len of string that end '$'
+; Entry:        bx = start of text
+; Exit:         cx = len of text
+; Destroy:      ax, cx, si
+;------------------------------------------------------------------------------
+StrLen          proc
+                mov  si, bx                     ; si = bx
+                xor  cx, cx                     ; cx = 0
+
+NewSymbol:      inc  cx                         ; cx++
+                lodsb                           ; mov al, ds:[si]
+                                                ; inc si
+                cmp  al, 24h                    ; if (al != '$') {
+                jne  NewSymbol                  ; goto NewSymbol}
+
+                ret
+StrLen          endp
 
 ;------------------------------------------------------------------------------
 ; FindPosFrame  Func to find position of frame in video memory
