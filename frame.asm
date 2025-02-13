@@ -7,13 +7,7 @@
 org 100h
 Start:          call ReadCmdLine                ; read info about frame
                                                 ; from command line
-                ;lea  si, A                      ; si = ptr of array of symbols
-
-                ;mov  ah, 09h                    ; color of frame
-                ;mov  cx, 40                     ; len   of frame
-                ;mov  dx, 5                      ; high  of frame
-                call FindPosFrame                ; di = start of print frame
-                ;mov  di, 10 * 80 * 2 + 20 * 2   ; start of print
+                call FindPosFrame               ; di = start of print frame
 
                 call MakeFrame                  ; make frame
 
