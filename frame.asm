@@ -12,6 +12,7 @@ Start:          call ReadCmdLine                ; read info about frame
                 call MakeFrame                  ; make frame
 
                 call StrLen                     ; find size of text
+                                                ; cx = size of text
                 call FindPosText                ; find position of text
                                                 ; di = start of print text
                 call MakeText                   ; write text to frame
@@ -38,7 +39,9 @@ MakeText        endp
 ; Destroy:      di
 ;------------------------------------------------------------------------------
 FindPosText     proc
-
+                mov  di, 80                     ; di = 80
+                sub  di, cx                     ; di = ((80 - cx) / 2) * 2
+                                                ; di = start of text
                 ret
 FindPosText     endp
 
