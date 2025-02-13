@@ -70,7 +70,8 @@ ReadCmdLine     endp
 ModeFrame       proc
                 mov  si, bx                     ; si = ptr to number of mode
                 lodsb                           ; mov al, ds:[si] && inc si
-
+                sub  al, 30h                    ; al -= 30h, to get a number
+                                                ; from hex of char
                 cmp  al, 8                      ; if (mode = 8) {
                 jne  NotMode8                   ; goto Mode8}
                 lea  si, M8                     ; si = ptr to mode 8 array
@@ -300,17 +301,40 @@ SetEsVideoSeg   proc
                 ret
 SetEsVideoSeg   endp
 
+;------------------------------------------------------------------------------
+;                   Variables
 M db 16                                         ; M = 16
 N db 10                                         ; N = 10
-            ; arrays of frame's symbols
-M8 db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
-M7 db  03h,  03h,  03h,  03h, 00h,  03h,  03h,  03h,  03h
-M6 db 0dah, 0c4h, 0bfh, 0b3h, 00h, 0b3h, 0c0h, 0c4h, 0d9h
-M5 db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
-M4 db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
-M3 db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
-M2 db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
-M1 db 0c9h, 0cdh, 0bbh, 0bah, 00h, 0bah, 0c8h, 0cdh, 0bch
+;------------------------------------------------------------------------------
+;             Arrays of frame's symbols
+;№     1.1   1.2   1.3   2.1   2.2   2.3   3.1   3.2   3.3
+;---------------------------------------------------------------
+M8  db 0c9h, 0cdh, 0bbh, 0bah,  00h, 0bah, 0c8h, 0cdh, 0bch
+;---------------------------------------------------------------
+M7  db  03h,  03h,  03h,  03h,  00h,  03h,  03h,  03h,  03h
+;---------------------------------------------------------------
+M6  db 0dah, 0c4h, 0bfh, 0b3h,  00h, 0b3h, 0c0h, 0c4h, 0d9h
+;---------------------------------------------------------------
+M5  db "123456789"
+;---------------------------------------------------------------
+M4  db 0dch, 0dch, 0dch, 0ddh,  00h, 0deh, 0dfh, 0dfh, 0dfh
+;---------------------------------------------------------------
+M3  db 024h, 024h, 024h, 024h,  00h, 024h, 024h, 024h, 024h
+;---------------------------------------------------------------
+M2  db 0e0h, 0e1h, 0e7h, 0e1h, 0e0h, 0e7h, 0e7h, 0e1h, 0e0h
+;---------------------------------------------------------------
+M1  db 0f4h, 02bh, 0f4h, 0b3h,  00h, 0b3h, 0f5h, 02bh, 0f5h
+
+; 1.1 - start  symbol of first  string
+; 1.2 - middle symbol of first  string
+; 1.3 - end    symbol of first  string
+; 2.1 - start  symbol of middle strings
+; 2.2 - middle symbol of middle strings
+; 2.3 - end    symbol of middle strings
+; 3.1 - start  symbol of end    string
+; 3.2 - middle symbol of end    string
+; 3.3 - end    symbol of end    string
+;------------------------------------------------------------------------------
 
 end             Start
 ;------------------------------------------------------------------------------
