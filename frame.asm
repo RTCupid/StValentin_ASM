@@ -12,12 +12,41 @@ Start:          call ReadCmdLine                ; read info about frame
                 ;mov  ah, 09h                    ; color of frame
                 ;mov  cx, 40                     ; len   of frame
                 ;mov  dx, 5                      ; high  of frame
-                mov  di, 10 * 80 * 2 + 20 * 2   ; start of print
+                call FindPosFrame                ; di = start of print frame
+                ;mov  di, 10 * 80 * 2 + 20 * 2   ; start of print
 
                 call MakeFrame                  ; make frame
 
                 mov  ax, 4c00h                  ; DOS Fn 4ch = exit (al)
                 int  21h
+
+;------------------------------------------------------------------------------
+; FindPosFrame  Func to find position of frame in video memory
+; Entry:        cx = len   of frame
+;               dx = high  of frame
+; Exit:         di = start of print frame
+; Destroy:      di
+;------------------------------------------------------------------------------
+FindPosFrame    proc
+                xor  di, di                     ; di = 0
+                push ax                         ; save ax in stack
+                mov  ax, 80                     ; ax = 80 (ax = len of screen)
+                sub  ax, cx                     ; ax = (80 - cx) / 2) * 2
+                add  di, ax                     ; di = start of string
+                mov  ax, 25                     ; ax = 25 (ax = high of screen)
+                sub  ax, dx                     ; ax = 25 - dx
+                div  Two                        ; ax = (25 - dx)/2
+                                                ; (ax = number of first string
+                                                ; in screen)
+                mul  StringScreen               ; ax = ((25 - dx)/2) * 80 * 2
+                                                ; (ax = ptr of first string
+                                                ; in screen)
+                add  di, ax                     ; di = ptr of upper left cornel
+                                                ; of frame
+                pop  ax                         ; back ax from stack
+                ret
+FindPosFrame    endp
+
 ;------------------------------------------------------------------------------
 ; ReadCmdLine   Func to read info about frame parametres
 ; Entry:        None
@@ -303,8 +332,10 @@ SetEsVideoSeg   endp
 
 ;------------------------------------------------------------------------------
 ;                   Variables
-M db 16                                         ; M = 16
-N db 10                                         ; N = 10
+Two          db 2                                          ; Two          = 2
+StringScreen db 80 * 2                                     ; StringScreen = 80 * 2
+M            db 16                                         ; M            = 16
+N            db 10                                         ; N            = 10
 ;------------------------------------------------------------------------------
 ;             Arrays of frame's symbols
 ;№     1.1   1.2   1.3   2.1   2.2   2.3   3.1   3.2   3.3
