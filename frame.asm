@@ -51,7 +51,7 @@ MakeText        endp
 FindPosText     proc
                 mov  di, 80                     ; di = 80
                 sub  di, cx                     ; di = 80 - cx
-                add  di, 11 * 80 * 2            ; di to some middle string
+                add  di, 12 * 80 * 2            ; di to some middle string
                                                 ; di = start of text
                 and  di, 0FFFEh                 ; make di even
                 ret
@@ -395,7 +395,7 @@ StringScreen db 80 * 2                                     ; StringScreen = 80 *
 M            db 16                                         ; M            = 16
 N            db 10                                         ; N            = 10
 ;------------------------------------------------------------------------------
-;             Arrays of frame's symbols
+;             Arrays of frame's symbols --> need to make one 2D array
 ;№     1.1   1.2   1.3   2.1   2.2   2.3   3.1   3.2   3.3
 ;---------------------------------------------------------------
 M8  db 0c9h, 0cdh, 0bbh, 0bah,  00h, 0bah, 0c8h, 0cdh, 0bch
