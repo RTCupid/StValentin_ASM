@@ -50,9 +50,10 @@ MakeText        endp
 ;------------------------------------------------------------------------------
 FindPosText     proc
                 mov  di, 80                     ; di = 80
-                sub  di, cx                     ; di = ((80 - cx) / 2) * 2
+                sub  di, cx                     ; di = 80 - cx
                 add  di, 11 * 80 * 2            ; di to some middle string
                                                 ; di = start of text
+                and  di, 0FFFEh                 ; make di even
                 ret
 FindPosText     endp
 
@@ -87,7 +88,7 @@ FindPosFrame    proc
                 xor  di, di                     ; di = 0
                 push ax                         ; save ax in stack
                 mov  ax, 80                     ; ax = 80 (ax = len of screen)
-                sub  ax, cx                     ; ax = (80 - cx) / 2) * 2
+                sub  ax, cx                     ; ax = 80 - cx
                 add  di, ax                     ; di = start of string
                 mov  ax, 25                     ; ax = 25 (ax = high of screen)
                 sub  ax, dx                     ; ax = 25 - dx
@@ -99,6 +100,7 @@ FindPosFrame    proc
                                                 ; in screen)
                 add  di, ax                     ; di = ptr of upper left cornel
                                                 ; of frame
+                and  di, 0FFFEh                 ; make di even
                 pop  ax                         ; back ax from stack
                 ret
 FindPosFrame    endp
