@@ -222,12 +222,7 @@ NewHexDigit:    xor  ax, ax                     ; mov ax, 0
                 ja   HexDigit                   ; goto HexDigit } <---(ax > 9)
                 add  ax, 30h                    ; else { ax += 30h}
 HexDigit:                                       ; ax = last digit of number
-                push ax                         ; save ax
-                mov  ax, cx                     ; ax = cx
-                mul  M                          ; ax*= 16
-                mov  cx, ax                     ; cx = ax (result: cx *= 16)
-                pop  ax                          ; back ax from stack
-                                                ; ax = last digit of number
+                shl  cx, 4                      ; cx *= 2^4 (cx *= 16)
                 add  cx, ax                     ; cx += ax
                 cmp  byte ptr ds:[si], 68h      ; if (si == 'h'){
                 jne  NewHexDigit                ; goto NewHexDigit: of number }
