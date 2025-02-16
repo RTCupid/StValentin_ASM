@@ -183,15 +183,40 @@ ModeFrame       proc
                 add  si, ax                     ; si += ax
 
                 pop  bx                         ; back bx from stack
-                pop  ax                         ; back ax from stack
                 add  bx, 1                      ; bx = next symbol
                                                 ; after number of mode
                 jmp  EndFindMode                ; goto EndFindMode
-Custom:
 
-
-EndFindMode:    ret
+Custom:         add  bx, 1                      ; bx = ptr symbol after mode
+                call SkipSpaces                 ; bx = start of symbols
+                                                ; for array in cmd line
+                mov  si, bx                     ; si = bx
+                call SkipText                   ; bx = ptr next symbol after
+                                                ; array of frame's symbols
+EndFindMode:    pop  ax                         ; back ax from stack
+                ret
 Modeframe       endp
+
+;------------------------------------------------------------------------------
+; SkipText      func to skip text
+; Entry:        bx = ptr to start of text for skipping
+; Exit:         bx = ptr to symbol after skipping text
+; Destroy:      bx
+;------------------------------------------------------------------------------
+SkipText        proc
+StartTextSkip:  push bx                         ; save value bx in stack
+                                                ; bx = ptr to command line
+                mov  byte ptr bl, [bx]          ; bl = [bx]
+                cmp  bl, 24h                    ; [bl] = '$'?
+                pop  bx                         ; back bx
+                je   EndTextSkip                ; if ([bl] == '$')goto EndSkip:
+
+                inc  bx                         ; bx++;
+                jmp  StartTextSkip              ; goto StartSkip:}
+
+EndTextSkip:    inc  bx                         ; bx++, bx = symbol after '$'
+                ret
+SkipText        endp
 
 ;------------------------------------------------------------------------------
 ; Atoih         Func to read command line and make number hex from string
