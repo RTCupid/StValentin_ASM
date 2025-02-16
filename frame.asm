@@ -163,50 +163,34 @@ ReadCmdLine     endp
 ;------------------------------------------------------------------------------
 ModeFrame       proc
                 mov  si, bx                     ; si = ptr to number of mode
+                push ax                         ; save ax in stack
+
+                xor  ax, ax                     ; ax = 0
                 lodsb                           ; mov al, ds:[si] && inc si
                 sub  al, 30h                    ; al -= 30h, to get a number
                                                 ; from hex of char
-                cmp  al, 8                      ; if (mode = 8) {
-                jne  NotMode8                   ; goto Mode8}
-                lea  si, M8                     ; si = ptr to mode 8 array
-                jmp  EndFindMode                ; end of find mode
+                cmp  al, 0                      ; if (al == 0) {
+                je   Custom                     ; goto Custom }
+                                                ;Style + 9 * (frame_style - 1)
+                lea  si, Style                  ; si = start of 2D array Style
 
-NotMode8:       cmp  al, 7                      ; if (mode = 7) {
-                jne  NotMode7                   ; goto Mode7}
-                lea  si, M7                     ; si = ptr to mode 8 array
-                jmp  EndFindMode                ; end of find mode
+                push bx                         ; save bx in stack
+                mov  bx, ax                     ; bx = ax
+                shl  ax, 3                      ; ax *= 2^3 (ax *= 8)
+                add  ax, bx                     ; ax += bx
+                sub  ax, 9                      ; (result ax = 9 * (ax - 1))
 
-NotMode7:       cmp  al, 6                      ; if (mode = 6) {
-                jne  NotMode6                   ; goto Mode6}
-                lea  si, M6                     ; si = ptr to mode 8 array
-                jmp  EndFindMode                ; end of find mode
+                add  si, ax                     ; si += ax
 
-NotMode6:       cmp  al, 5                      ; if (mode = 5) {
-                jne  NotMode5                   ; goto Mode5}
-                lea  si, M5                     ; si = ptr to mode 8 array
-                jmp  EndFindMode                ; end of find mode
-
-NotMode5:       cmp  al, 4                      ; if (mode = 4) {
-                jne  NotMode4                   ; goto Mode4}
-                lea  si, M4                     ; si = ptr to mode 8 array
-                jmp  EndFindMode                ; end of find mode
-
-NotMode4:       cmp  al, 3                      ; if (mode = 3) {
-                jne  NotMode3                   ; goto Mode3}
-                lea  si, M3                     ; si = ptr to mode 8 array
-                jmp  EndFindMode                ; end of find mode
-
-NotMode3:       cmp  al, 2                      ; if (mode = 2) {
-                jne  NotMode2                   ; goto Mode2}
-                lea  si, M2                     ; si = ptr to mode 8 array
-                jmp  EndFindMode                ; end of find mode
-
-NotMode2:       lea  si, M1                     ; si = ptr to mode 8 array
-                jmp  EndFindMode                ; end of find mode
-
-EndFindMode:    add  bx, 1                      ; bx = next symbol
+                pop  bx                         ; back bx from stack
+                pop  ax                         ; back ax from stack
+                add  bx, 1                      ; bx = next symbol
                                                 ; after number of mode
-                ret
+                jmp  EndFindMode                ; goto EndFindMode
+Custom:
+
+
+EndFindMode:    ret
 Modeframe       endp
 
 ;------------------------------------------------------------------------------
@@ -392,30 +376,17 @@ SetEsVideoSeg   proc
 SetEsVideoSeg   endp
 
 ;------------------------------------------------------------------------------
-;                   Variables
-Two          db 2                                          ; Two          = 2
-StringScreen db 80 * 2                                     ; StringScreen = 80 * 2
-M            db 16                                         ; M            = 16
-N            db 10                                         ; N            = 10
-;------------------------------------------------------------------------------
-;             Arrays of frame's symbols --> need to make one 2D array
-;№     1.1   1.2   1.3   2.1   2.2   2.3   3.1   3.2   3.3
-;---------------------------------------------------------------
-M8  db 0c9h, 0cdh, 0bbh, 0bah,  00h, 0bah, 0c8h, 0cdh, 0bch
-;---------------------------------------------------------------
-M7  db  03h,  03h,  03h,  03h,  00h,  03h,  03h,  03h,  03h
-;---------------------------------------------------------------
-M6  db 0dah, 0c4h, 0bfh, 0b3h,  00h, 0b3h, 0c0h, 0c4h, 0d9h
-;---------------------------------------------------------------
-M5  db "123456789"
-;---------------------------------------------------------------
-M4  db 0dch, 0dch, 0dch, 0ddh,  00h, 0deh, 0dfh, 0dfh, 0dfh
-;---------------------------------------------------------------
-M3  db 024h, 024h, 024h, 024h,  00h, 024h, 024h, 024h, 024h
-;---------------------------------------------------------------
-M2  db 0e0h, 0e1h, 0e7h, 0e1h, 0e0h, 0e7h, 0e7h, 0e1h, 0e0h
-;---------------------------------------------------------------
-M1  db 0f4h, 02bh, 0f4h, 0b3h,  00h, 0b3h, 0f5h, 02bh, 0f5h
+;             Arrays of frame's symbols --> //TODO: one 2D array
+;№      1.1   1.2   1.3   2.1   2.2   2.3   3.1   3.2   3.3
+;1--------------------------------------------------------------
+Style db 0c9h, 0cdh, 0bbh, 0bah,  00h, 0bah, 0c8h, 0cdh, 0bch
+      db 03h,  03h,  03h,  03h,  00h,  03h,  03h,  03h,  03h
+      db 0dah, 0c4h, 0bfh, 0b3h,  00h, 0b3h, 0c0h, 0c4h, 0d9h
+      db "123456789"
+      db 0dch, 0dch, 0dch, 0ddh,  00h, 0deh, 0dfh, 0dfh, 0dfh
+      db 024h, 024h, 024h, 024h,  00h, 024h, 024h, 024h, 024h
+      db 0e0h, 0e1h, 0e7h, 0e1h, 0e0h, 0e7h, 0e7h, 0e1h, 0e0h
+      db 0f4h, 02bh, 0f4h, 0b3h,  00h, 0b3h, 0f5h, 02bh, 0f5h
 
 ; 1.1 - start  symbol of first  string
 ; 1.2 - middle symbol of first  string
