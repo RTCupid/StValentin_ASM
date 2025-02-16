@@ -87,17 +87,24 @@ StrLen          endp
 FindPosFrame    proc
                 xor  di, di                     ; di = 0
                 push ax                         ; save ax in stack
+
                 mov  ax, 80                     ; ax = 80 (ax = len of screen)
                 sub  ax, cx                     ; ax = 80 - cx
-                add  di, ax                     ; di = start of string
-                mov  ax, 25                     ; ax = 25 (ax = high of screen)
-                sub  ax, dx                     ; ax = 25 - dx
-                div  Two                        ; ax = (25 - dx)/2
-                                                ; (ax = number of first string
-                                                ; in screen)
-                mul  StringScreen               ; ax = ((25 - dx)/2) * 80 * 2
+                add  di, ax                     ; di = start in string
+
+                mov  ax, 25                     ; ax  = 25 (ax = high of screen)
+                sub  ax, dx                     ; ax  = 25 - dx
+                shr  ax, 1                      ; ax /= 2 | ax = number of
+                                                ; first string in screen)
+                push dx                         ; save dx in stack
+                mov  dx, ax                     ; dx  = ax
+                shl  dx, 4                      ; dx *= 16
+                shl  ax, 6                      ; ax *= 64
+                add  ax, dx                     ; (result: ax  = 80 * ax)
+                shl  ax, 1                      ; ax *= 2
                                                 ; (ax = ptr of first string
                                                 ; in screen)
+                pop  dx                         ; back dx from stack
                 add  di, ax                     ; di = ptr of upper left cornel
                                                 ; of frame
                 and  di, 0FFFEh                 ; make di even
@@ -254,8 +261,9 @@ NewDigit:       xor  ax, ax                     ; mov ax, 0
                 sub  ax, 30h                    ; ax = last digit of number
                 push ax                         ; save ax
                 mov  ax, cx                     ; ax = cx
-                mul  N                          ; ax*= 10
-                mov  cx, ax                     ; cx = ax (result: cx *= 10)
+                shl  cx, 3                      ; cx *= 2^3 (cx *= 8)
+                add  cx, ax                     ;
+                add  cx, ax                     ; (result: cx *= 10)
                 pop ax                          ; back ax from stack
                                                 ; ax = last digit of number
                 add  cx, ax                     ; cx += ax
