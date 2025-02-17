@@ -200,21 +200,25 @@ Modeframe       endp
 ;------------------------------------------------------------------------------
 ; SkipText      func to skip text
 ; Entry:        bx = ptr to start of text for skipping
+;               ds = segment with code
+;               es = video segment
 ; Exit:         bx = ptr to symbol after skipping text
-; Destroy:      bx
+; Destroy:      bx, al, di
 ;------------------------------------------------------------------------------
 SkipText        proc
-StartTextSkip:  push bx                         ; save value bx in stack
-                                                ; bx = ptr to command line
-                mov  byte ptr bl, [bx]          ; bl = [bx]
-                cmp  bl, 24h                    ; [bl] = '$'?
-                pop  bx                         ; back bx
-                je   EndTextSkip                ; if ([bl] == '$')goto EndSkip:
+StartTextSkip:
+                mov  di, ds                     ; di = ds
+                mov  es, di                     ; es = di
+                mov  di, bx                     ; di = bx
+                                                ; di = ptr to command line
+                mov  al, '$'                    ; al = '$'
+                repne scasb                     ; while (es:[di++] != al){}
 
-                inc  bx                         ; bx++;
-                jmp  StartTextSkip              ; goto StartSkip:}
+                mov  bx, di                     ; bx = di
 
-EndTextSkip:    inc  bx                         ; bx++, bx = symbol after '$'
+                mov  di, 0b800h                 ; VIDEOSEG
+                mov  es, di                     ; es = videoseg
+
                 ret
 SkipText        endp
 
