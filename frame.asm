@@ -191,8 +191,11 @@ Custom:         add  bx, 1                      ; bx = ptr symbol after mode
                 call SkipSpaces                 ; bx = start of symbols
                                                 ; for array in cmd line
                 mov  si, bx                     ; si = bx
+
+                push cx                         ; save cx = len of frame
                 call SkipText                   ; bx = ptr next symbol after
                                                 ; array of frame's symbols
+                pop  cx                         ; back cx from stack
 EndFindMode:    pop  ax                         ; back ax from stack
                 ret
 Modeframe       endp
@@ -203,16 +206,16 @@ Modeframe       endp
 ;               ds = segment with code
 ;               es = video segment
 ; Exit:         bx = ptr to symbol after skipping text
-; Destroy:      bx, al, di
+; Destroy:      bx, al, di, cx
 ;------------------------------------------------------------------------------
 SkipText        proc
-StartTextSkip:
+                mov  cx, 7Fh                    ; cx = 7Fh (max len cmd line)
                 mov  di, ds                     ; di = ds
                 mov  es, di                     ; es = di
                 mov  di, bx                     ; di = bx
                                                 ; di = ptr to command line
                 mov  al, '$'                    ; al = '$'
-                repne scasb                     ; while (es:[di++] != al){}
+                repne scasb                     ; while (es:[di++] != al){cx--;}
 
                 mov  bx, di                     ; bx = di
 
@@ -266,7 +269,7 @@ Atoih           endp
 ; Destroy:      bx, cx, si
 ;------------------------------------------------------------------------------
 Atoi            proc
-                mov  cx, 0                      ; cx = 0
+                xor  cx, cx                     ; cx = 0
                 mov  si, bx                     ; si = start of number
                                                 ; in cmd line
 NewDigit:
@@ -289,9 +292,12 @@ Atoi            endp
 
 ;------------------------------------------------------------------------------
 ; SkipSpaces    Func to skip all space symbols before info about frame
-; Entry:        None
+; Entry:        bx = start ptr
+;               ds = segment with code
+;               es = video segment
+;               di = upper left cornel of frame or start of print text
 ; Exit:         bx = ptr to start info about frame
-; Destroy:      bx
+; Destroy:      bx, al
 ;------------------------------------------------------------------------------
 SkipSpaces      proc
 StartSkip:      push bx                         ; save value bx in stack
