@@ -1,4 +1,4 @@
-Turbo Assembler	 Version 4.1	    02/17/25 23:47:05	    Page 1
+Turbo Assembler	 Version 4.1	    02/17/25 23:51:24	    Page 1
 frame.asm
 
 
@@ -14,7 +14,7 @@ frame.asm
       9										     ; from command line
      10	0103  E8 0035				     call FindPosFrame		     ; di = start of print frame
      11
-     12	0106  E8 0127				     call MakeFrame		     ; make frame
+     12	0106  E8 0128				     call MakeFrame		     ; make frame
      13
      14	0109  E8 0022				     call StrLen		     ; find size of text
      15										     ; cx = size of text
@@ -60,7 +60,7 @@ frame.asm
      55										     ; di = start of text
      56	012A  83 E7 FE				     and  di, 0FFFEh		     ; make di even
      57	012D  C3				     ret
-Turbo Assembler	 Version 4.1	    02/17/25 23:47:05	    Page 2
+Turbo Assembler	 Version 4.1	    02/17/25 23:51:24	    Page 2
 frame.asm
 
 
@@ -122,7 +122,7 @@ frame.asm
     112	016A  83 E7 FE				     and  di, 0FFFEh		     ; make di even
     113	016D  58				     pop  ax			     ; back ax from stack
     114	016E  C3				     ret
-Turbo Assembler	 Version 4.1	    02/17/25 23:47:05	    Page 3
+Turbo Assembler	 Version 4.1	    02/17/25 23:51:24	    Page 3
 frame.asm
 
 
@@ -141,31 +141,31 @@ frame.asm
     126				     ;------------------------------------------------------------------------------
     127	016F			     ReadCmdLine     proc
     128	016F  BB 0081				     mov  bx, 81h		     ; bx = start of command line
-    129	0172  E8 00AE				     call SkipSpaces		     ; skip all	spaces before arg
+    129	0172  E8 00AF				     call SkipSpaces		     ; skip all	spaces before arg
     130										     ; with len	of frame
-    131	0175  E8 008B				     call Atoi			     ; read info about len of frame
+    131	0175  E8 008C				     call Atoi			     ; read info about len of frame
     132										     ; and convert it to number
     133										     ; in register cx
-    134	0178  E8 00A8				     call SkipSpaces		     ; skip all	spaces before arg
+    134	0178  E8 00A9				     call SkipSpaces		     ; skip all	spaces before arg
     135										     ; with high of frame
     136	017B  51				     push cx			     ; save len	 of frame
     137										     ; (cx) in stack
-    138	017C  E8 0084				     call Atoi			     ; read info about high of frame
+    138	017C  E8 0085				     call Atoi			     ; read info about high of frame
     139										     ; and convert it to number
     140										     ; in register cx
     141	017F  8B D1				     mov  dx, cx		     ; dx      = high of frame
     142	0181  59				     pop  cx			     ; back cx = len  of frame
-    143	0182  E8 009E				     call SkipSpaces		     ; skip all	spaces before arg
+    143	0182  E8 009F				     call SkipSpaces		     ; skip all	spaces before arg
     144										     ; with color of frame
-    145	0185  E8 0052				     call Atoih			     ; read info about color
+    145	0185  E8 0053				     call Atoih			     ; read info about color
     146										     ; of frame	from cmd line and
     147										     ; record it to byte ah
-    148	0188  E8 0098				     call SkipSpaces		     ; skip all	spaces before arg
+    148	0188  E8 0099				     call SkipSpaces		     ; skip all	spaces before arg
     149										     ; with mode of frame
     150	018B  E8 0004				     call ModeFrame		     ; read mode from [bx] &&
     151										     ; si = ptr	to array of symbols
     152										     ; to make frame
-    153	018E  E8 0092				     call SkipSpaces		     ; skip all	spaces before array
+    153	018E  E8 0093				     call SkipSpaces		     ; skip all	spaces before array
     154										     ; with text about love
     155										     ; bx = start of text
     156	0191  C3				     ret
@@ -184,7 +184,7 @@ frame.asm
     169
     170	0195  33 C0				     xor  ax, ax		     ; ax = 0
     171	0197  AC				     lodsb			     ; mov al, ds:[si] && inc si
-Turbo Assembler	 Version 4.1	    02/17/25 23:47:05	    Page 4
+Turbo Assembler	 Version 4.1	    02/17/25 23:51:24	    Page 4
 frame.asm
 
 
@@ -194,7 +194,7 @@ frame.asm
     174										     ; if (al == 0) {
     175	019A  74 1A				     je	  Custom		     ; goto Custom }
     176										     ;Style + 9	* (frame_style - 1)
-    177	019C  BE 0269r				     lea  si, Style		     ; si = start of 2D	array Style
+    177	019C  BE 026Ar				     lea  si, Style		     ; si = start of 2D	array Style
     178
     179	019F  53				     push bx			     ; save bx in stack
     180	01A0  8B D8				     mov  bx, ax		     ; bx = ax
@@ -207,271 +207,272 @@ frame.asm
     187	01AF  5B				     pop  bx			     ; back bx from stack
     188	01B0  83 C3 01				     add  bx, 1			     ; bx = next symbol
     189										     ; after number of mode
-    190	01B3  EB 0E 90				     jmp  EndFindMode		     ; goto EndFindMode
+    190	01B3  EB 10 90				     jmp  EndFindMode		     ; goto EndFindMode
     191
     192	01B6  83 C3 01		     Custom:	     add  bx, 1			     ; bx = ptr	symbol after mode
-    193	01B9  E8 0067				     call SkipSpaces		     ; bx = start of symbols
+    193	01B9  E8 0068				     call SkipSpaces		     ; bx = start of symbols
     194										     ; for array in cmd	line
     195	01BC  8B F3				     mov  si, bx		     ; si = bx
     196
-    197	01BE  51				     push cx			     ; save cx = len of	frame
-    198	01BF  E8 0003				     call SkipText		     ; bx = ptr	next symbol after
-    199										     ; array of	frame's	symbols
-    200	01C2  59				     pop  cx			     ; back cx from stack
-    201	01C3  58		     EndFindMode:    pop  ax			     ; back ax from stack
-    202	01C4  C3				     ret
-    203	01C5			     Modeframe	     endp
-    204
-    205				     ;------------------------------------------------------------------------------
-    206				     ; SkipText	     func to skip text
-    207				     ; Entry:	     bx	= ptr to start of text for skipping
-    208				     ;		     ds	= segment with code
-    209				     ;		     es	= video	segment
-    210				     ; Exit:	     bx	= ptr to symbol	after skipping text
-    211				     ; Destroy:	     bx, al, di, cx
-    212				     ;------------------------------------------------------------------------------
-    213	01C5			     SkipText	     proc
-    214	01C5  B9 007F				     mov  cx, 7Fh		     ; cx = 7Fh	(max len cmd line)
-    215	01C8  8C DF				     mov  di, ds		     ; di = ds
-    216	01CA  8E C7				     mov  es, di		     ; es = di
-    217	01CC  8B FB				     mov  di, bx		     ; di = bx
-    218										     ; di = ptr	to command line
-    219	01CE  B0 24				     mov  al, '$'		     ; al = '$'
-    220	01D0  F2> AE				     repne scasb		     ; while (es:[di++]	!= al){cx--;}
-    221
-    222	01D2  8B DF				     mov  bx, di		     ; bx = di
-    223
-    224	01D4  BF B800				     mov  di, 0b800h		     ; VIDEOSEG
-    225	01D7  8E C7				     mov  es, di		     ; es = videoseg
-    226
-    227	01D9  C3				     ret
-    228	01DA			     SkipText	     endp
-Turbo Assembler	 Version 4.1	    02/17/25 23:47:05	    Page 5
+    197	01BE  56				     push si			     ; save si = len of	frame
+    198	01BF  51				     push cx			     ; save cx = len of	frame
+    199	01C0  E8 0004				     call SkipText		     ; bx = ptr	next symbol after
+    200										     ; array of	frame's	symbols
+    201	01C3  59				     pop  cx			     ; back cx from stack
+    202	01C4  5E				     pop  si			     ; back si from stack
+    203	01C5  58		     EndFindMode:    pop  ax			     ; back ax from stack
+    204	01C6  C3				     ret
+    205	01C7			     Modeframe	     endp
+    206
+    207				     ;------------------------------------------------------------------------------
+    208				     ; SkipText	     func to skip text
+    209				     ; Entry:	     bx	= ptr to start of text for skipping
+    210				     ;		     ds	= segment with code
+    211				     ;		     es	= video	segment
+    212				     ; Exit:	     bx	= ptr to symbol	after skipping text
+    213				     ; Destroy:	     bx, al, di, cx, si
+    214				     ;------------------------------------------------------------------------------
+    215	01C7			     SkipText	     proc
+    216	01C7  B9 007F				     mov  cx, 7Fh		     ; cx = 7Fh	(max len cmd line)
+    217	01CA  8C C6				     mov  si, es		     ; save old	value es
+    218	01CC  8C DF				     mov  di, ds		     ; di = ds
+    219	01CE  8E C7				     mov  es, di		     ; es = di
+    220	01D0  8B FB				     mov  di, bx		     ; di = bx
+    221										     ; di = ptr	to command line
+    222	01D2  B0 24				     mov  al, '$'		     ; al = '$'
+    223	01D4  F2> AE				     repne scasb		     ; while (es:[di++]	!= al){cx--;}
+    224
+    225	01D6  8B DF				     mov  bx, di		     ; bx = di
+    226	01D8  8E C6				     mov  es, si		     ; es = old	value of es
+    227
+    228	01DA  C3				     ret
+Turbo Assembler	 Version 4.1	    02/17/25 23:51:24	    Page 5
 frame.asm
 
 
 
-    229
-    230				     ;------------------------------------------------------------------------------
-    231				     ; Atoih	     Func to read command line and make	number hex from	string
-    232				     ;		     to	register ah
-    233				     ; Entry:	     bx	= start	a number in command line
-    234				     ; Exit:	     ah	= hex number from cmd line
-    235				     ;		     bx	= ptr to next symbol after number in command line
-    236				     ; Destroy:	     bx, ax, si
-    237				     ;------------------------------------------------------------------------------
-    238	01DA			     Atoih	     proc
-    239	01DA  51				     push cx			     ; save cx in stack
-    240	01DB  B9 0000				     mov  cx, 0			     ; cx = 0
-    241	01DE  8B F3				     mov  si, bx		     ; si = start of number
-    242										     ; in cmd line
-    243	01E0  33 C0		     NewHexDigit:    xor  ax, ax		     ; mov ax, 0
-    244	01E2  AC				     lodsb			     ; mov al, ds:[si] && inc si
-    245
-    246	01E3  2D 0060				     sub  ax, 60h		     ; if (ax >	60h){
-    247	01E6  77 03				     ja	  HexDigit		     ; goto HexDigit } <---(ax > 9)
-    248	01E8  05 0030				     add  ax, 30h		     ; else { ax += 30h}
-    249	01EB			     HexDigit:					     ; ax = last digit of number
-    250	01EB  D1 E1 D1 E1 D1 E1	D1+		     shl  cx, 4			     ; cx *= 2^4 (cx *=	16)
-    251	      E1
-    252	01F3  03 C8				     add  cx, ax		     ; cx += ax
-    253	01F5  80 3C 68				     cmp  byte ptr ds:[si], 68h	     ; if (si == 'h'){
-    254	01F8  75 E6				     jne  NewHexDigit		     ; goto NewHexDigit: of number }
-    255
-    256	01FA  46				     inc  si			     ; si++, to	skip 'h'
-    257	01FB  33 C0				     xor  ax, ax		     ; clean ax	(ax = 0)
-    258	01FD  8A E1				     mov  ah, cl		     ; ah = color of frame from	cl
-    259	01FF  8B DE				     mov  bx, si		     ; bx = ptr	of next	symbol
-    260										     ; after number in cmd line
-    261	0201  59				     pop  cx			     ; cx = old	value cx from stack
-    262
-    263	0202  C3				     ret
-    264	0203			     Atoih	     endp
-    265
-    266				     ;------------------------------------------------------------------------------
-    267				     ; Atoi	     Func to read command line and make	number from string
-    268				     ;		     to	register cx
-    269				     ; Entry:	     bx	= start	a number in command line
-    270				     ; Exit:	     cx	= number from cmd line
-    271				     ;		     bx	= ptr to next symbol after number in command line
-    272				     ; Destroy:	     bx, cx, si
-    273				     ;------------------------------------------------------------------------------
-    274	0203			     Atoi	     proc
-    275	0203  33 C9				     xor  cx, cx		     ; cx = 0
-    276	0205  8B F3				     mov  si, bx		     ; si = start of number
-    277										     ; in cmd line
-    278	0207			     NewDigit:
-    279	0207  8B C1				     mov  ax, cx		     ; ax = cx
-    280	0209  D1 E1 D1 E1 D1 E1			     shl  cx, 3			     ; cx *= 2^3 (cx *=	8)
-    281	020F  03 C8				     add  cx, ax		     ;
-    282	0211  03 C8				     add  cx, ax		     ; (result:	cx *= 10)
-    283	0213  33 C0				     xor  ax, ax
-    284	0215  AC				     lodsb			     ; mov al, ds:[si] && inc si
-    285	0216  2D 0030				     sub  ax, 30h		     ; ax = last digit of number
-Turbo Assembler	 Version 4.1	    02/17/25 23:47:05	    Page 6
+    229	01DB			     SkipText	     endp
+    230
+    231				     ;------------------------------------------------------------------------------
+    232				     ; Atoih	     Func to read command line and make	number hex from	string
+    233				     ;		     to	register ah
+    234				     ; Entry:	     bx	= start	a number in command line
+    235				     ; Exit:	     ah	= hex number from cmd line
+    236				     ;		     bx	= ptr to next symbol after number in command line
+    237				     ; Destroy:	     bx, ax, si
+    238				     ;------------------------------------------------------------------------------
+    239	01DB			     Atoih	     proc
+    240	01DB  51				     push cx			     ; save cx in stack
+    241	01DC  B9 0000				     mov  cx, 0			     ; cx = 0
+    242	01DF  8B F3				     mov  si, bx		     ; si = start of number
+    243										     ; in cmd line
+    244	01E1  33 C0		     NewHexDigit:    xor  ax, ax		     ; mov ax, 0
+    245	01E3  AC				     lodsb			     ; mov al, ds:[si] && inc si
+    246
+    247	01E4  2D 0060				     sub  ax, 60h		     ; if (ax >	60h){
+    248	01E7  77 03				     ja	  HexDigit		     ; goto HexDigit } <---(ax > 9)
+    249	01E9  05 0030				     add  ax, 30h		     ; else { ax += 30h}
+    250	01EC			     HexDigit:					     ; ax = last digit of number
+    251	01EC  D1 E1 D1 E1 D1 E1	D1+		     shl  cx, 4			     ; cx *= 2^4 (cx *=	16)
+    252	      E1
+    253	01F4  03 C8				     add  cx, ax		     ; cx += ax
+    254	01F6  80 3C 68				     cmp  byte ptr ds:[si], 68h	     ; if (si == 'h'){
+    255	01F9  75 E6				     jne  NewHexDigit		     ; goto NewHexDigit: of number }
+    256
+    257	01FB  46				     inc  si			     ; si++, to	skip 'h'
+    258	01FC  33 C0				     xor  ax, ax		     ; clean ax	(ax = 0)
+    259	01FE  8A E1				     mov  ah, cl		     ; ah = color of frame from	cl
+    260	0200  8B DE				     mov  bx, si		     ; bx = ptr	of next	symbol
+    261										     ; after number in cmd line
+    262	0202  59				     pop  cx			     ; cx = old	value cx from stack
+    263
+    264	0203  C3				     ret
+    265	0204			     Atoih	     endp
+    266
+    267				     ;------------------------------------------------------------------------------
+    268				     ; Atoi	     Func to read command line and make	number from string
+    269				     ;		     to	register cx
+    270				     ; Entry:	     bx	= start	a number in command line
+    271				     ; Exit:	     cx	= number from cmd line
+    272				     ;		     bx	= ptr to next symbol after number in command line
+    273				     ; Destroy:	     bx, cx, si
+    274				     ;------------------------------------------------------------------------------
+    275	0204			     Atoi	     proc
+    276	0204  33 C9				     xor  cx, cx		     ; cx = 0
+    277	0206  8B F3				     mov  si, bx		     ; si = start of number
+    278										     ; in cmd line
+    279	0208			     NewDigit:
+    280	0208  8B C1				     mov  ax, cx		     ; ax = cx
+    281	020A  D1 E1 D1 E1 D1 E1			     shl  cx, 3			     ; cx *= 2^3 (cx *=	8)
+    282	0210  03 C8				     add  cx, ax		     ;
+    283	0212  03 C8				     add  cx, ax		     ; (result:	cx *= 10)
+    284	0214  33 C0				     xor  ax, ax
+    285	0216  AC				     lodsb			     ; mov al, ds:[si] && inc si
+Turbo Assembler	 Version 4.1	    02/17/25 23:51:24	    Page 6
 frame.asm
 
 
 
-    286										     ; ax = last digit of number
-    287	0219  03 C8				     add  cx, ax		     ; cx += ax
-    288	021B  80 3C 20				     cmp  byte ptr ds:[si], 20h	     ; if (si != ' ')
-    289	021E  75 E7				     jne  NewDigit		     ; goto NewDigit: of number
-    290
-    291	0220  8B DE				     mov  bx, si		     ; bx = ptr	of next	symbol
-    292										     ; after number in cmd line
-    293	0222  C3				     ret
-    294	0223			     Atoi	     endp
-    295
-    296				     ;------------------------------------------------------------------------------
-    297				     ; SkipSpaces    Func to skip all space symbols before info	about frame
-    298				     ; Entry:	     bx	= start	ptr
-    299				     ;		     ds	= segment with code
-    300				     ;		     es	= video	segment
-    301				     ;		     di	= upper	left cornel of frame or	start of print text
-    302				     ; Exit:	     bx	= ptr to start info about frame
-    303				     ; Destroy:	     bx, al
-    304				     ;------------------------------------------------------------------------------
-    305	0223			     SkipSpaces	     proc
-    306	0223  53		     StartSkip:	     push bx			     ; save value bx in	stack
-    307										     ; bx = ptr	to command line
-    308	0224  8A 1F				     mov  byte ptr bl, [bx]	     ; bl = [bx]
-    309	0226  80 FB 20				     cmp  bl, 20h		     ; if ([bx]	!= ' '){
-    310	0229  5B				     pop  bx			     ; back bx
-    311	022A  75 03				     jne  EndSkip		     ; goto EndSkip:}
-    312	022C  43				     inc  bx			     ; else { bx++;
-    313	022D  EB F4				     jmp  StartSkip		     ; goto StartSkip:}
-    314
-    315	022F  C3		     EndSkip:	     ret
-    316	0230			     SkipSpaces	     endp
-    317
-    318				     ;------------------------------------------------------------------------------
-    319				     ; MakeFrame     Func to make frame
-    320				     ; Entry:	     ah	    - color of frame
-    321				     ;		     si	    - ptr   of array of	the symbols for	frame
-    322				     ;		     cx	    - len   of frame
-    323				     ;		     dx	    - high  of frame
-    324				     ;		     di	    - start of print (upper left cornel)
-    325				     ; Exit:	     None
-    326				     ; Destroy:	     ax, si, cx, dx, di, es
-    327				     ;------------------------------------------------------------------------------
-    328	0230			     MakeFrame	     proc
-    329	0230  57				     push di			     ; save start of print in stack
-    330	0231  E8 002F				     call SetEsVideoSeg		     ; di = 0b800h; es = di
-    331	0234  5F				     pop  di			     ; back start of print
-    332
-    333	0235  51				     push cx			     ; save cx in stack
-    334	0236  E8 001D				     call MakeStrFrame		     ; make first string of frame
-    335	0239  59				     pop  cx			     ; pop cx from stack
-    336	023A  83 EA 02				     sub  dx, 2			     ; dx -= 2;	dx = number
-    337										     ; of middle strings
-    338	023D  81 C7 00A0	     MakeMiddle:     add  di, 80 * 2		     ; di to next string
-    339	0241  51				     push cx			     ; save cx
-    340	0242  56				     push si			     ; save si
-    341	0243  E8 0010				     call MakeStrFrame		     ; make middle string
-    342	0246  5E				     pop si			     ; si = &(start symbol of
-Turbo Assembler	 Version 4.1	    02/17/25 23:47:05	    Page 7
+    286	0217  2D 0030				     sub  ax, 30h		     ; ax = last digit of number
+    287										     ; ax = last digit of number
+    288	021A  03 C8				     add  cx, ax		     ; cx += ax
+    289	021C  80 3C 20				     cmp  byte ptr ds:[si], 20h	     ; if (si != ' ')
+    290	021F  75 E7				     jne  NewDigit		     ; goto NewDigit: of number
+    291
+    292	0221  8B DE				     mov  bx, si		     ; bx = ptr	of next	symbol
+    293										     ; after number in cmd line
+    294	0223  C3				     ret
+    295	0224			     Atoi	     endp
+    296
+    297				     ;------------------------------------------------------------------------------
+    298				     ; SkipSpaces    Func to skip all space symbols before info	about frame
+    299				     ; Entry:	     bx	= start	ptr
+    300				     ;		     ds	= segment with code
+    301				     ;		     es	= video	segment
+    302				     ;		     di	= upper	left cornel of frame or	start of print text
+    303				     ; Exit:	     bx	= ptr to start info about frame
+    304				     ; Destroy:	     bx, al
+    305				     ;------------------------------------------------------------------------------
+    306	0224			     SkipSpaces	     proc
+    307	0224  53		     StartSkip:	     push bx			     ; save value bx in	stack
+    308										     ; bx = ptr	to command line
+    309	0225  8A 1F				     mov  byte ptr bl, [bx]	     ; bl = [bx]
+    310	0227  80 FB 20				     cmp  bl, 20h		     ; if ([bx]	!= ' '){
+    311	022A  5B				     pop  bx			     ; back bx
+    312	022B  75 03				     jne  EndSkip		     ; goto EndSkip:}
+    313	022D  43				     inc  bx			     ; else { bx++;
+    314	022E  EB F4				     jmp  StartSkip		     ; goto StartSkip:}
+    315
+    316	0230  C3		     EndSkip:	     ret
+    317	0231			     SkipSpaces	     endp
+    318
+    319				     ;------------------------------------------------------------------------------
+    320				     ; MakeFrame     Func to make frame
+    321				     ; Entry:	     ah	    - color of frame
+    322				     ;		     si	    - ptr   of array of	the symbols for	frame
+    323				     ;		     cx	    - len   of frame
+    324				     ;		     dx	    - high  of frame
+    325				     ;		     di	    - start of print (upper left cornel)
+    326				     ; Exit:	     None
+    327				     ; Destroy:	     ax, si, cx, dx, di, es
+    328				     ;------------------------------------------------------------------------------
+    329	0231			     MakeFrame	     proc
+    330	0231  57				     push di			     ; save start of print in stack
+    331	0232  E8 002F				     call SetEsVideoSeg		     ; di = 0b800h; es = di
+    332	0235  5F				     pop  di			     ; back start of print
+    333
+    334	0236  51				     push cx			     ; save cx in stack
+    335	0237  E8 001D				     call MakeStrFrame		     ; make first string of frame
+    336	023A  59				     pop  cx			     ; pop cx from stack
+    337	023B  83 EA 02				     sub  dx, 2			     ; dx -= 2;	dx = number
+    338										     ; of middle strings
+    339	023E  81 C7 00A0	     MakeMiddle:     add  di, 80 * 2		     ; di to next string
+    340	0242  51				     push cx			     ; save cx
+    341	0243  56				     push si			     ; save si
+    342	0244  E8 0010				     call MakeStrFrame		     ; make middle string
+Turbo Assembler	 Version 4.1	    02/17/25 23:51:24	    Page 7
 frame.asm
 
 
 
-    343										     ; middle strings)
-    344	0247  59				     pop  cx			     ; cx = len	of frame
-    345	0248  4A				     dec  dx			     ; dx--;
-    346	0249  75 F2				     jne  MakeMiddle		     ; loop
-    347
-    348	024B  83 C6 03				     add  si, 3			     ; si = &(start symbol of
-    349										     ; end string)
-    350	024E  81 C7 00A0			     add  di, 80 * 2		     ; di to next string
-    351
-    352	0252  E8 0001				     call MakeStrFrame		     ; make end	string of frame
-    353
-    354	0255  C3				     ret
-    355	0256			     MakeFrame	     endp
-    356
-    357				     ;------------------------------------------------------------------------------
-    358				     ; MakeStrFrame  Func to make string of frame
-    359				     ; Entry:	     ah	    - color of string
-    360				     ;		     si	    - array of symbol for string
-    361				     ;		     cx	    - len of string
-    362				     ;		     di	    - start of print string
-    363				     ;		     es	    - videoseg
-    364				     ; Exit:	     None
-    365				     ; Destroy:	     ax, cx, si
-    366				     ;------------------------------------------------------------------------------
-    367	0256			     MakeStrFrame    proc
-    368	0256  57				     push di			     ; save di = start of string
-    369
-    370	0257  AC				     lodsb			     ; ax = first symbol of string
-    371										     ; mov al, ds:[si] && inc si
-    372	0258  AB				     stosw			     ; mov es:[di], ax && di +=	2
-    373
-    374	0259  AC				     lodsb			     ; ax = middle symbol of string
-    375										     ; mov al, ds:[si] && inc si
-    376	025A  83 E9 02				     sub  cx, 2			     ; cx -= 2;	cx = number
-    377										     ; of middle symbols
-    378	025D  F3> AB				     rep stosw			     ; mov es:[di], ax && di +=	2
-    379										     ; cx -= 1;	cx = 0?; make loop
-    380										     ; put all middle symbols
-    381	025F  AC				     lodsb			     ; ax = end	symbol of string
-    382										     ; mov al, ds:[si] && inc si
-    383	0260  AB				     stosw			     ; mov es:[di], ax && di +=	2
-    384	0261  5F				     pop  di			     ; back di = start of string
-    385
-    386	0262  C3				     ret
-    387	0263			     MakeStrFrame    endp
-    388
-    389				     ;------------------------------------------------------------------------------
-    390				     ; SetEsVideoSeg Func to set ptr of	videoseg to es
-    391				     ; Entry:	     None
-    392				     ; Exit:	     None
-    393				     ; Destroy:	     es, di
-    394				     ;------------------------------------------------------------------------------
-    395	0263			     SetEsVideoSeg   proc
-    396	0263  BF B800				     mov  di, 0b800h		     ; VIDEOSEG
-    397	0266  8E C7				     mov  es, di		     ; es = videoseg
-    398	0268  C3				     ret
-    399	0269			     SetEsVideoSeg   endp
-Turbo Assembler	 Version 4.1	    02/17/25 23:47:05	    Page 8
+    343	0247  5E				     pop si			     ; si = &(start symbol of
+    344										     ; middle strings)
+    345	0248  59				     pop  cx			     ; cx = len	of frame
+    346	0249  4A				     dec  dx			     ; dx--;
+    347	024A  75 F2				     jne  MakeMiddle		     ; loop
+    348
+    349	024C  83 C6 03				     add  si, 3			     ; si = &(start symbol of
+    350										     ; end string)
+    351	024F  81 C7 00A0			     add  di, 80 * 2		     ; di to next string
+    352
+    353	0253  E8 0001				     call MakeStrFrame		     ; make end	string of frame
+    354
+    355	0256  C3				     ret
+    356	0257			     MakeFrame	     endp
+    357
+    358				     ;------------------------------------------------------------------------------
+    359				     ; MakeStrFrame  Func to make string of frame
+    360				     ; Entry:	     ah	    - color of string
+    361				     ;		     si	    - array of symbol for string
+    362				     ;		     cx	    - len of string
+    363				     ;		     di	    - start of print string
+    364				     ;		     es	    - videoseg
+    365				     ; Exit:	     None
+    366				     ; Destroy:	     ax, cx, si
+    367				     ;------------------------------------------------------------------------------
+    368	0257			     MakeStrFrame    proc
+    369	0257  57				     push di			     ; save di = start of string
+    370
+    371	0258  AC				     lodsb			     ; ax = first symbol of string
+    372										     ; mov al, ds:[si] && inc si
+    373	0259  AB				     stosw			     ; mov es:[di], ax && di +=	2
+    374
+    375	025A  AC				     lodsb			     ; ax = middle symbol of string
+    376										     ; mov al, ds:[si] && inc si
+    377	025B  83 E9 02				     sub  cx, 2			     ; cx -= 2;	cx = number
+    378										     ; of middle symbols
+    379	025E  F3> AB				     rep stosw			     ; mov es:[di], ax && di +=	2
+    380										     ; cx -= 1;	cx = 0?; make loop
+    381										     ; put all middle symbols
+    382	0260  AC				     lodsb			     ; ax = end	symbol of string
+    383										     ; mov al, ds:[si] && inc si
+    384	0261  AB				     stosw			     ; mov es:[di], ax && di +=	2
+    385	0262  5F				     pop  di			     ; back di = start of string
+    386
+    387	0263  C3				     ret
+    388	0264			     MakeStrFrame    endp
+    389
+    390				     ;------------------------------------------------------------------------------
+    391				     ; SetEsVideoSeg Func to set ptr of	videoseg to es
+    392				     ; Entry:	     None
+    393				     ; Exit:	     None
+    394				     ; Destroy:	     es, di
+    395				     ;------------------------------------------------------------------------------
+    396	0264			     SetEsVideoSeg   proc
+    397	0264  BF B800				     mov  di, 0b800h		     ; VIDEOSEG
+    398	0267  8E C7				     mov  es, di		     ; es = videoseg
+    399	0269  C3				     ret
+Turbo Assembler	 Version 4.1	    02/17/25 23:51:24	    Page 8
 frame.asm
 
 
 
-    400
-    401				     ;------------------------------------------------------------------------------
-    402				     ;		   2D Array of frame's symbols
-    403				     ;№      1.1   1.2   1.3	 2.1   2.2   2.3   3.1	 3.2   3.3
-    404				     ;1--------------------------------------------------------------
-    405	0269  C9 CD BB BA 00 BA	C8+  Style db 0c9h, 0cdh, 0bbh,	0bah,  00h, 0bah, 0c8h,	0cdh, 0bch
-    406	      CD BC
-    407	0272  03 03 03 03 00 03	03+	   db 03h,  03h,  03h,	03h,  00h,  03h,  03h,	03h,  03h
-    408	      03 03
-    409	027B  DA C4 BF B3 00 B3	C0+	   db 0dah, 0c4h, 0bfh,	0b3h,  00h, 0b3h, 0c0h,	0c4h, 0d9h
-    410	      C4 D9
-    411	0284  31 32 33 34 35 36	37+	   db "123456789"
-    412	      38 39
-    413	028D  DC DC DC DD 00 DE	DF+	   db 0dch, 0dch, 0dch,	0ddh,  00h, 0deh, 0dfh,	0dfh, 0dfh
-    414	      DF DF
-    415	0296  24 24 24 24 00 24	24+	   db 024h, 024h, 024h,	024h,  00h, 024h, 024h,	024h, 024h
-    416	      24 24
-    417	029F  E0 E1 E7 E1 E0 E7	E7+	   db 0e0h, 0e1h, 0e7h,	0e1h, 0e0h, 0e7h, 0e7h,	0e1h, 0e0h
-    418	      E1 E0
-    419	02A8  F4 2B F4 B3 00 B3	F5+	   db 0f4h, 02bh, 0f4h,	0b3h,  00h, 0b3h, 0f5h,	02bh, 0f5h
-    420	      2B F5
-    421
-    422				     ; 1.1 - start  symbol of first  string
-    423				     ; 1.2 - middle symbol of first  string
-    424				     ; 1.3 - end    symbol of first  string
-    425				     ; 2.1 - start  symbol of middle strings
-    426				     ; 2.2 - middle symbol of middle strings
-    427				     ; 2.3 - end    symbol of middle strings
-    428				     ; 3.1 - start  symbol of end    string
-    429				     ; 3.2 - middle symbol of end    string
-    430				     ; 3.3 - end    symbol of end    string
-    431				     ;------------------------------------------------------------------------------
-    432
-    433				     end	     Start
-Turbo Assembler	 Version 4.1	    02/17/25 23:47:05	    Page 9
+    400	026A			     SetEsVideoSeg   endp
+    401
+    402				     ;------------------------------------------------------------------------------
+    403				     ;		   2D Array of frame's symbols
+    404				     ;№      1.1   1.2   1.3	 2.1   2.2   2.3   3.1	 3.2   3.3
+    405				     ;1--------------------------------------------------------------
+    406	026A  C9 CD BB BA 00 BA	C8+  Style db 0c9h, 0cdh, 0bbh,	0bah,  00h, 0bah, 0c8h,	0cdh, 0bch
+    407	      CD BC
+    408	0273  03 03 03 03 00 03	03+	   db 03h,  03h,  03h,	03h,  00h,  03h,  03h,	03h,  03h
+    409	      03 03
+    410	027C  DA C4 BF B3 00 B3	C0+	   db 0dah, 0c4h, 0bfh,	0b3h,  00h, 0b3h, 0c0h,	0c4h, 0d9h
+    411	      C4 D9
+    412	0285  31 32 33 34 35 36	37+	   db "123456789"
+    413	      38 39
+    414	028E  DC DC DC DD 00 DE	DF+	   db 0dch, 0dch, 0dch,	0ddh,  00h, 0deh, 0dfh,	0dfh, 0dfh
+    415	      DF DF
+    416	0297  24 24 24 24 00 24	24+	   db 024h, 024h, 024h,	024h,  00h, 024h, 024h,	024h, 024h
+    417	      24 24
+    418	02A0  E0 E1 E7 E1 E0 E7	E7+	   db 0e0h, 0e1h, 0e7h,	0e1h, 0e0h, 0e7h, 0e7h,	0e1h, 0e0h
+    419	      E1 E0
+    420	02A9  F4 2B F4 B3 00 B3	F5+	   db 0f4h, 02bh, 0f4h,	0b3h,  00h, 0b3h, 0f5h,	02bh, 0f5h
+    421	      2B F5
+    422
+    423				     ; 1.1 - start  symbol of first  string
+    424				     ; 1.2 - middle symbol of first  string
+    425				     ; 1.3 - end    symbol of first  string
+    426				     ; 2.1 - start  symbol of middle strings
+    427				     ; 2.2 - middle symbol of middle strings
+    428				     ; 2.3 - end    symbol of middle strings
+    429				     ; 3.1 - start  symbol of end    string
+    430				     ; 3.2 - middle symbol of end    string
+    431				     ; 3.3 - end    symbol of end    string
+    432				     ;------------------------------------------------------------------------------
+    433
+    434				     end	     Start
+Turbo Assembler	 Version 4.1	    02/17/25 23:51:24	    Page 9
 Symbol Table
 
 
@@ -481,7 +482,7 @@ Symbol Name			  Type	 Value
 
 ??DATE				  Text	 "02/17/25"
 ??FILENAME			  Text	 "frame	  "
-??TIME				  Text	 "23:47:05"
+??TIME				  Text	 "23:51:23"
 ??VERSION			  Number 040A
 @32BIT				  Text	 0
 @CODE				  Text	 DGROUP
@@ -495,35 +496,35 @@ Symbol Name			  Type	 Value
 @MODEL				  Text	 1
 @STACK				  Text	 DGROUP
 @WORDSIZE			  Text	 2
-ATOI				  Near	 DGROUP:0203
-ATOIH				  Near	 DGROUP:01DA
+ATOI				  Near	 DGROUP:0204
+ATOIH				  Near	 DGROUP:01DB
 CUSTOM				  Near	 DGROUP:01B6
-ENDFINDMODE			  Near	 DGROUP:01C3
-ENDSKIP				  Near	 DGROUP:022F
+ENDFINDMODE			  Near	 DGROUP:01C5
+ENDSKIP				  Near	 DGROUP:0230
 FINDPOSFRAME			  Near	 DGROUP:013B
 FINDPOSTEXT			  Near	 DGROUP:0121
-HEXDIGIT			  Near	 DGROUP:01EB
-MAKEFRAME			  Near	 DGROUP:0230
-MAKEMIDDLE			  Near	 DGROUP:023D
-MAKESTRFRAME			  Near	 DGROUP:0256
+HEXDIGIT			  Near	 DGROUP:01EC
+MAKEFRAME			  Near	 DGROUP:0231
+MAKEMIDDLE			  Near	 DGROUP:023E
+MAKESTRFRAME			  Near	 DGROUP:0257
 MAKETEXT			  Near	 DGROUP:0117
 MODEFRAME			  Near	 DGROUP:0192
 NEWCHAR				  Near	 DGROUP:011A
-NEWDIGIT			  Near	 DGROUP:0207
-NEWHEXDIGIT			  Near	 DGROUP:01E0
+NEWDIGIT			  Near	 DGROUP:0208
+NEWHEXDIGIT			  Near	 DGROUP:01E1
 NEWSYMBOL			  Near	 DGROUP:0133
 READCMDLINE			  Near	 DGROUP:016F
-SETESVIDEOSEG			  Near	 DGROUP:0263
-SKIPSPACES			  Near	 DGROUP:0223
-SKIPTEXT			  Near	 DGROUP:01C5
+SETESVIDEOSEG			  Near	 DGROUP:0264
+SKIPSPACES			  Near	 DGROUP:0224
+SKIPTEXT			  Near	 DGROUP:01C7
 START				  Near	 DGROUP:0100
-STARTSKIP			  Near	 DGROUP:0223
+STARTSKIP			  Near	 DGROUP:0224
 STRLEN				  Near	 DGROUP:012E
-STYLE				  Byte	 DGROUP:0269
+STYLE				  Byte	 DGROUP:026A
 
 Groups & Segments		  Bit Size Align  Combine Class
 
 DGROUP				  Group
   _DATA				  16  0000 Word	  Public  DATA
-  _TEXT				  16  02B1 Word	  Public  CODE
+  _TEXT				  16  02B2 Word	  Public  CODE
 

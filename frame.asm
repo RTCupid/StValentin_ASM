@@ -192,10 +192,12 @@ Custom:         add  bx, 1                      ; bx = ptr symbol after mode
                                                 ; for array in cmd line
                 mov  si, bx                     ; si = bx
 
+                push si                         ; save si = len of frame
                 push cx                         ; save cx = len of frame
                 call SkipText                   ; bx = ptr next symbol after
                                                 ; array of frame's symbols
                 pop  cx                         ; back cx from stack
+                pop  si                         ; back si from stack
 EndFindMode:    pop  ax                         ; back ax from stack
                 ret
 Modeframe       endp
@@ -206,10 +208,11 @@ Modeframe       endp
 ;               ds = segment with code
 ;               es = video segment
 ; Exit:         bx = ptr to symbol after skipping text
-; Destroy:      bx, al, di, cx
+; Destroy:      bx, al, di, cx, si
 ;------------------------------------------------------------------------------
 SkipText        proc
                 mov  cx, 7Fh                    ; cx = 7Fh (max len cmd line)
+                mov  si, es                     ; save old value es
                 mov  di, ds                     ; di = ds
                 mov  es, di                     ; es = di
                 mov  di, bx                     ; di = bx
@@ -218,9 +221,7 @@ SkipText        proc
                 repne scasb                     ; while (es:[di++] != al){cx--;}
 
                 mov  bx, di                     ; bx = di
-
-                mov  di, 0b800h                 ; VIDEOSEG
-                mov  es, di                     ; es = videoseg
+                mov  es, si                     ; es = old value of es
 
                 ret
 SkipText        endp
