@@ -401,7 +401,7 @@ SetEsVideoSeg   proc
 SetEsVideoSeg   endp
 
 ;------------------------------------------------------------------------------
-;             Arrays of frame's symbols --> //TODO: one 2D array
+;             2D Array of frame's symbols
 ;№      1.1   1.2   1.3   2.1   2.2   2.3   3.1   3.2   3.3
 ;1--------------------------------------------------------------
 Style db 0c9h, 0cdh, 0bbh, 0bah,  00h, 0bah, 0c8h, 0cdh, 0bch

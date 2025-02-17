@@ -1,4 +1,4 @@
-Turbo Assembler	 Version 4.1	    02/16/25 17:43:33	    Page 1
+Turbo Assembler	 Version 4.1	    02/17/25 17:14:45	    Page 1
 frame.asm
 
 
@@ -60,7 +60,7 @@ frame.asm
      55										     ; di = start of text
      56	012A  83 E7 FE				     and  di, 0FFFEh		     ; make di even
      57	012D  C3				     ret
-Turbo Assembler	 Version 4.1	    02/16/25 17:43:33	    Page 2
+Turbo Assembler	 Version 4.1	    02/17/25 17:14:45	    Page 2
 frame.asm
 
 
@@ -122,7 +122,7 @@ frame.asm
     112	016A  83 E7 FE				     and  di, 0FFFEh		     ; make di even
     113	016D  58				     pop  ax			     ; back ax from stack
     114	016E  C3				     ret
-Turbo Assembler	 Version 4.1	    02/16/25 17:43:33	    Page 3
+Turbo Assembler	 Version 4.1	    02/17/25 17:14:45	    Page 3
 frame.asm
 
 
@@ -184,7 +184,7 @@ frame.asm
     169
     170	0195  33 C0				     xor  ax, ax		     ; ax = 0
     171	0197  AC				     lodsb			     ; mov al, ds:[si] && inc si
-Turbo Assembler	 Version 4.1	    02/16/25 17:43:33	    Page 4
+Turbo Assembler	 Version 4.1	    02/17/25 17:14:45	    Page 4
 frame.asm
 
 
@@ -246,7 +246,7 @@ frame.asm
     226				     ; Entry:	     bx	= start	a number in command line
     227				     ; Exit:	     ah	= hex number from cmd line
     228				     ;		     bx	= ptr to next symbol after number in command line
-Turbo Assembler	 Version 4.1	    02/16/25 17:43:33	    Page 5
+Turbo Assembler	 Version 4.1	    02/17/25 17:14:45	    Page 5
 frame.asm
 
 
@@ -308,7 +308,7 @@ frame.asm
     283	021A  75 E5				     jne  NewDigit		     ; goto NewDigit: of number
     284
     285	021C  8B DE				     mov  bx, si		     ; bx = ptr	of next	symbol
-Turbo Assembler	 Version 4.1	    02/16/25 17:43:33	    Page 6
+Turbo Assembler	 Version 4.1	    02/17/25 17:14:45	    Page 6
 frame.asm
 
 
@@ -370,7 +370,7 @@ frame.asm
     340	024A  83 C6 03				     add  si, 3			     ; si = &(start symbol of
     341										     ; end string)
     342	024D  81 C7 00A0			     add  di, 80 * 2		     ; di to next string
-Turbo Assembler	 Version 4.1	    02/16/25 17:43:33	    Page 7
+Turbo Assembler	 Version 4.1	    02/17/25 17:14:45	    Page 7
 frame.asm
 
 
@@ -432,7 +432,7 @@ frame.asm
     397				     ; Exit:	     None
     398				     ; Destroy:	     es, di
     399				     ;------------------------------------------------------------------------------
-Turbo Assembler	 Version 4.1	    02/16/25 17:43:33	    Page 8
+Turbo Assembler	 Version 4.1	    02/17/25 17:14:45	    Page 8
 frame.asm
 
 
@@ -444,7 +444,7 @@ frame.asm
     404	026C			     SetEsVideoSeg   endp
     405
     406				     ;------------------------------------------------------------------------------
-    407				     ;		   Arrays of frame's symbols --> //TODO: one 2D	array
+    407				     ;		   2D Array of frame's symbols
     408				     ;№      1.1   1.2   1.3	 2.1   2.2   2.3   3.1	 3.2   3.3
     409				     ;1--------------------------------------------------------------
     410	026C  C9 CD BB BA 00 BA	C8+  Style db 0c9h, 0cdh, 0bbh,	0bah,  00h, 0bah, 0c8h,	0cdh, 0bch
@@ -476,7 +476,7 @@ frame.asm
     436				     ;------------------------------------------------------------------------------
     437
     438				     end	     Start
-Turbo Assembler	 Version 4.1	    02/16/25 17:43:33	    Page 9
+Turbo Assembler	 Version 4.1	    02/17/25 17:14:45	    Page 9
 Symbol Table
 
 
@@ -484,9 +484,9 @@ Symbol Table
 
 Symbol Name			  Type	 Value
 
-??DATE				  Text	 "02/16/25"
+??DATE				  Text	 "02/17/25"
 ??FILENAME			  Text	 "frame	  "
-??TIME				  Text	 "17:43:33"
+??TIME				  Text	 "17:14:45"
 ??VERSION			  Number 040A
 @32BIT				  Text	 0
 @CODE				  Text	 DGROUP
