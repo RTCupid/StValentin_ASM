@@ -169,7 +169,7 @@ ModeFrame       proc
                 lodsb                           ; mov al, ds:[si] && inc si
                 sub  al, 30h                    ; al -= 30h, to get a number
                                                 ; from hex of char
-                cmp  al, 0                      ; if (al == 0) {
+                                                ; if (al == 0) {
                 je   Custom                     ; goto Custom }
                                                 ;Style + 9 * (frame_style - 1)
                 lea  si, Style                  ; si = start of 2D array Style
@@ -265,15 +265,14 @@ Atoi            proc
                 mov  cx, 0                      ; cx = 0
                 mov  si, bx                     ; si = start of number
                                                 ; in cmd line
-NewDigit:       xor  ax, ax                     ; mov ax, 0
-                lodsb                           ; mov al, ds:[si] && inc si
-                sub  ax, 30h                    ; ax = last digit of number
-                push ax                         ; save ax
+NewDigit:
                 mov  ax, cx                     ; ax = cx
                 shl  cx, 3                      ; cx *= 2^3 (cx *= 8)
                 add  cx, ax                     ;
                 add  cx, ax                     ; (result: cx *= 10)
-                pop ax                          ; back ax from stack
+                xor  ax, ax
+                lodsb                           ; mov al, ds:[si] && inc si
+                sub  ax, 30h                    ; ax = last digit of number
                                                 ; ax = last digit of number
                 add  cx, ax                     ; cx += ax
                 cmp  byte ptr ds:[si], 20h      ; if (si != ' ')
@@ -331,7 +330,6 @@ MakeMiddle:     add  di, 80 * 2                 ; di to next string
                                                 ; middle strings)
                 pop  cx                         ; cx = len of frame
                 dec  dx                         ; dx--;
-                cmp  dx, 0                      ; dx = 0?
                 jne  MakeMiddle                 ; loop
 
                 add  si, 3                      ; si = &(start symbol of
@@ -364,7 +362,9 @@ MakeStrFrame    proc
                                                 ; mov al, ds:[si] && inc si
                 sub  cx, 2                      ; cx -= 2; cx = number
                                                 ; of middle symbols
-                call PutString                  ; put all middle symbols
+                rep stosw                       ; mov es:[di], ax && di += 2
+                                                ; cx -= 1; cx = 0?; make loop
+                                                ; put all middle symbols
                 lodsb                           ; ax = end symbol of string
                                                 ; mov al, ds:[si] && inc si
                 stosw                           ; mov es:[di], ax && di += 2
@@ -372,21 +372,6 @@ MakeStrFrame    proc
 
                 ret
 MakeStrFrame    endp
-
-;------------------------------------------------------------------------------
-; PutString     Func to put string to consol
-; Entry:        ah/ al - color/ symbol
-;               cx     - size of text
-;               di     - start of print
-;               es     - videoseg
-; Exit:         None
-; Destroy:      es, cx, di
-;------------------------------------------------------------------------------
-PutString       proc
-                rep stosw                       ; mov es:[di], ax && di += 2
-                                                ; cx -= 1; cx = 0?; make loop
-                ret
-PutString       endp
 
 ;------------------------------------------------------------------------------
 ; SetEsVideoSeg Func to set ptr of videoseg to es
