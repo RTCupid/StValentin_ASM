@@ -60,20 +60,26 @@ FindPosText     endp
 ;------------------------------------------------------------------------------
 ; StrLen        Func to find len of string that end '$'
 ; Entry:        bx = start of text
+;               ah = color of text
 ; Exit:         cx = len of text
-; Destroy:      cx, si
+; Destroy:      cx, si, di, bx
 ;------------------------------------------------------------------------------
 StrLen          proc
-                push ax                         ; save old value of ax in stack
-                mov  si, bx                     ; si = bx
-                xor  cx, cx                     ; cx = 0
+                mov  cx, 7Fh                    ; cx = 7Fh (max len cmd line)
+                mov  si, es                     ; save old value es
+                mov  di, ds                     ; di = ds
+                mov  es, di                     ; es = di
+                mov  di, bx                     ; di = bx
+                                                ; di = ptr to command line
+                mov  al, '$'                    ; al = '$'
+                repne scasb                     ; while (es:[di++] != al){cx--;}
+                dec  di                         ; di--
 
-NewSymbol:      inc  cx                         ; cx++
-                lodsb                           ; mov al, ds:[si]
-                                                ; inc si
-                cmp  al, 24h                    ; if (al != '$') {
-                jne  NewSymbol                  ; goto NewSymbol}
-                pop  ax                         ; back ax from stack
+                sub  di, bx                     ; di = di - bx
+                mov  cx, di                     ; cx = di = len of text
+
+                mov  es, si                     ; es = old value of es
+
                 ret
 StrLen          endp
 
