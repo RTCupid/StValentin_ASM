@@ -192,7 +192,7 @@ Custom:         add  bx, 1                      ; bx = ptr symbol after mode
                                                 ; for array in cmd line
                 mov  si, bx                     ; si = bx
 
-                push si                         ; save si = len of frame
+                push si                         ; save si = ptr frame's symbols
                 push cx                         ; save cx = len of frame
                 call SkipText                   ; bx = ptr next symbol after
                                                 ; array of frame's symbols
@@ -297,18 +297,32 @@ Atoi            endp
 ;               ds = segment with code
 ;               es = video segment
 ;               di = upper left cornel of frame or start of print text
+;               cx = len of frame
+;               si = start array of frame's symbols
 ; Exit:         bx = ptr to start info about frame
-; Destroy:      bx, al
+; Destroy:      bx, al, di, cx, si
 ;------------------------------------------------------------------------------
 SkipSpaces      proc
-StartSkip:      push bx                         ; save value bx in stack
-                                                ; bx = ptr to command line
-                mov  byte ptr bl, [bx]          ; bl = [bx]
-                cmp  bl, 20h                    ; if ([bx] != ' '){
-                pop  bx                         ; back bx
-                jne  EndSkip                    ; goto EndSkip:}
-                inc  bx                         ; else { bx++;
-                jmp  StartSkip                  ; goto StartSkip:}
+StartSkip:
+                push cx                         ; save cx
+                push di                         ; save di
+                push si                         ; save si
+                mov  cx, 7Fh                    ; cx = 7Fh (max len cmd line)
+                mov  si, es                     ; save old value es
+                mov  di, ds                     ; di = ds
+                mov  es, di                     ; es = di
+                mov  di, bx                     ; di = bx
+                                                ; di = ptr to command line
+                mov  al, ' '                    ; al = ' '
+                repe scasb                      ; while (es:[di++] != al){cx--;}
+                dec  di                         ; di--
+                                                ; di = first information symbol
+                mov  bx, di                     ; bx = di
+                mov  es, si                     ; es = old value of es
+
+                pop  si                         ; back si
+                pop  di                         ; back di
+                pop  cx                         ; back cx
 
 EndSkip:        ret
 SkipSpaces      endp
